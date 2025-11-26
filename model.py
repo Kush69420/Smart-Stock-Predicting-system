@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from data_prep import load_sales_data, create_features, prepare_train_test_split
@@ -109,7 +110,7 @@ def predict_future_demand(model, product_id, days_ahead=7, df_with_features=None
             'Sales_Rolling_30': np.mean(recent_sales[-30:]) if len(recent_sales) >= 30 else np.mean(recent_sales)
         }
         
-        X_future = np.array([[features[col] for col in feature_columns]])
+        X_future = pd.DataFrame([[features[col] for col in feature_columns]], columns=feature_columns)
         prediction = model.predict(X_future)[0]
         prediction = max(0, int(round(prediction)))
         
