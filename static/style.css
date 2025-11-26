@@ -118,12 +118,17 @@ body {
 }
 
 .stat-card {
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 16px;
     padding: 1.5rem;
     position: relative;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    color: white;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .stat-card.alert {
