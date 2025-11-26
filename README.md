@@ -88,54 +88,59 @@ You should see `(venv)` in your terminal prompt.
 pip install -r requirements.txt
 ```
 
-Installs:
-- Flask 3.0.0
-- scikit-learn 1.3.2
-- pandas 2.1.3
-- numpy 1.26.2
+This installs all required packages including:
+- Flask 3.0.0 (web framework)
+- scikit-learn 1.3.2 (ML model)
+- pandas 2.1.3 (data processing)
+- numpy 1.26.2 (numerical computing)
+- kaggle 1.5.14 (dataset download)
 
-### Step 4: Initialize Database
+### Step 4: Set Up Kaggle API Credentials
+
+The model automatically downloads the real Kaggle dataset for training:
+
+1. Create free Kaggle account: https://www.kaggle.com
+2. Go to **Account Settings** → **API** → click **"Create New API Token"**
+3. This downloads `kaggle.json` to your computer
+4. Save it in the correct location:
+   - **Windows**: `C:\Users\YourUsername\.kaggle\kaggle.json`
+   - **macOS/Linux**: `~/.kaggle/kaggle.json`
+5. Set file permissions (macOS/Linux only):
+   ```bash
+   chmod 600 ~/.kaggle/kaggle.json
+   ```
+
+### Step 5: Initialize Database
 
 ```bash
 python db_setup.py
 ```
 
-Creates `inventory.db` with:
+Creates `inventory.db` with sample data for the dashboard UI:
 - 10 sample products (electronics & office supplies)
 - 5 suppliers
-- 1,800 sales transactions (180 days)
+- 1,800 sales transactions (180 days of history)
 
-### Step 5: Set Up Kaggle API Credentials
+### Step 6: Train the ML Model
 
-The model automatically downloads the dataset from Kaggle using the API:
-
-1. Create free Kaggle account: https://www.kaggle.com
-2. Go to Account Settings → API → "Create New API Token"
-3. This downloads `kaggle.json` → Save it at: `~/.kaggle/kaggle.json`
-   - **Windows**: `C:\Users\YourUsername\.kaggle\kaggle.json`
-   - **macOS/Linux**: `/home/YourUsername/.kaggle/kaggle.json`
-4. Set permissions: `chmod 600 ~/.kaggle/kaggle.json`
-
-### Step 6: Install Kaggle Package
-
-```bash
-pip install kaggle
-```
-
-### Step 7: Train the ML Model
-
-The script automatically downloads and trains on Kaggle data:
+The model automatically downloads the real Kaggle dataset and trains:
 
 ```bash
 python train_model_kaggle.py
 ```
 
-**Optional**: If you already have the CSV file, provide its path:
+This will:
+1. Connect to Kaggle using your API credentials
+2. Download the sales inventory dataset
+3. Train the Gradient Boosting model on real data
+4. Save the trained model to `inventory_model.pkl`
+
+**Optional**: If you already have the CSV file, provide its path instead:
 ```bash
 python train_model_kaggle.py sales_inventory.csv
 ```
 
-### Step 8: Run the Application
+### Step 7: Run the Application
 
 ```bash
 python app.py
@@ -147,9 +152,13 @@ Should output:
 * Running on http://0.0.0.0:5000
 ```
 
-### Step 9: Access the Dashboard
+### Step 8: Access the Dashboard
 
-Open your browser and go to: **http://localhost:5000**
+Open your browser and navigate to: **http://localhost:5000**
+
+The dashboard is now running with:
+- **UI Data**: Sample database (for testing and demo)
+- **ML Model**: Trained on real Kaggle dataset (for accurate predictions)
 
 ## Quick Start Summary
 
@@ -162,28 +171,25 @@ python -m venv venv
 # Windows: venv\Scripts\activate
 # macOS/Linux: source venv/bin/activate
 
-# 3. Install dependencies
+# 3. Install all dependencies (including kaggle)
 pip install -r requirements.txt
 
-# 4. Install Kaggle package
-pip install kaggle
+# 4. Setup Kaggle API credentials
+# - Go to https://www.kaggle.com → Account Settings → API
+# - Download API token (kaggle.json)
+# - Save at ~/.kaggle/kaggle.json (or C:\Users\You\.kaggle\kaggle.json on Windows)
+# - macOS/Linux: chmod 600 ~/.kaggle/kaggle.json
 
-# 5. Setup Kaggle API credentials
-# - Create account at https://www.kaggle.com
-# - Download API token from Account Settings → API
-# - Save at ~/.kaggle/kaggle.json
-# - chmod 600 ~/.kaggle/kaggle.json (macOS/Linux)
-
-# 6. Create database with sample data (for UI demo)
+# 5. Initialize database with sample data
 python db_setup.py
 
-# 7. Train ML model (auto-downloads from Kaggle)
+# 6. Train ML model (auto-downloads from Kaggle)
 python train_model_kaggle.py
 
-# 8. Run web application
+# 7. Run web application
 python app.py
 
-# 9. Open http://localhost:5000 in your browser
+# 8. Open http://localhost:5000 in your browser
 ```
 
 ## Dashboard Features
