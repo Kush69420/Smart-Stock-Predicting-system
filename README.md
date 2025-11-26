@@ -78,9 +78,13 @@ This installs:
 - pandas 2.1.3
 - numpy 1.26.2
 
-### Step 4A: Initialize the Database (Option 1: Sample Data)
+### Step 4: Initialize the Database
 
-Create the SQLite database with sample data (10 products, 5 suppliers, 180 days of sales):
+Choose one of the following options:
+
+#### Option 1: Sample Data (Quick Testing)
+
+Create the SQLite database with synthetic sample data (10 products, 5 suppliers, 180 days of sales):
 ```bash
 python db_setup.py
 ```
@@ -95,38 +99,41 @@ Generated 180 days of sales data
 
 This creates a file called `inventory.db` in your project folder.
 
-### Step 4B: Initialize the Database (Option 2: Kaggle Dataset)
+#### Option 2: Real Kaggle Dataset (Recommended for Production)
 
-**Recommended for more realistic data!**
+**Step 1: Create the database schema**
+```bash
+python db_setup.py
+```
 
-1. Download the Kaggle dataset:
-   - Go to: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
-   - Click "Download" button (requires Kaggle account)
-   - Extract the CSV file
+This creates the database structure (you'll get sample data, but we'll replace it next).
 
-2. Import the dataset:
-   ```bash
-   python import_kaggle_dataset.py sales_inventory.csv
-   ```
-   
-   Replace `sales_inventory.csv` with the actual filename from Kaggle.
+**Step 2: Download the Kaggle dataset**
+- Go to: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
+- Click "Download" button (requires free Kaggle account)
+- Extract the CSV file
 
-3. Expected output:
-   ```
-   Loading dataset from: sales_inventory.csv
-   Imported [number] unique products
-   Imported [number] sales transactions
-   ✓ Import successful!
-     Total products: [number]
-     Total sales: [number]
-     All prices converted to Indian Rupees (₹)
-   ```
+**Step 3: Import the dataset**
+```bash
+python import_kaggle_dataset.py sales_inventory.csv
+```
 
-**Note**: Prices are imported as-is from the dataset
+Replace `sales_inventory.csv` with the actual filename from Kaggle.
 
-**Choose one option:**
-- Use `python db_setup.py` for quick testing with synthetic sample data
-- Use `import_kaggle_dataset.py` for realistic production data
+**Expected output:**
+```
+Loading dataset from: sales_inventory.csv
+Imported [number] unique products
+Imported [number] sales transactions
+✓ Import successful!
+  Total products: [number]
+  Total sales: [number]
+```
+
+**Summary:**
+- Both options start with `python db_setup.py` (creates database schema)
+- Option 1: Done! Use the sample data
+- Option 2: Then run `python import_kaggle_dataset.py` to replace with Kaggle data
 
 ### Step 5: Preprocess Data
 
