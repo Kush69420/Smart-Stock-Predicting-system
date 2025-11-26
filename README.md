@@ -78,7 +78,7 @@ This installs:
 - pandas 2.1.3
 - numpy 1.26.2
 
-### Step 4: Initialize the Database
+### Step 4A: Initialize the Database (Option 1: Sample Data)
 
 Create the SQLite database with sample data (10 products, 5 suppliers, 180 days of sales):
 ```bash
@@ -94,6 +94,39 @@ Generated 180 days of sales data
 ```
 
 This creates a file called `inventory.db` in your project folder.
+
+### Step 4B: Initialize the Database (Option 2: Kaggle Dataset)
+
+**Recommended for more realistic data!**
+
+1. Download the Kaggle dataset:
+   - Go to: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
+   - Click "Download" button (requires Kaggle account)
+   - Extract the CSV file
+
+2. Import the dataset:
+   ```bash
+   python import_kaggle_dataset.py sales_inventory.csv
+   ```
+   
+   Replace `sales_inventory.csv` with the actual filename from Kaggle.
+
+3. Expected output:
+   ```
+   Loading dataset from: sales_inventory.csv
+   Imported [number] unique products
+   Imported [number] sales transactions
+   ✓ Import successful!
+     Total products: [number]
+     Total sales: [number]
+     All prices converted to Indian Rupees (₹)
+   ```
+
+**Note**: Prices are automatically converted from USD to Indian Rupees (1 USD ≈ ₹83)
+
+**Choose one option:**
+- Use `python db_setup.py` for quick testing with synthetic sample data
+- Use `import_kaggle_dataset.py` for realistic production data
 
 ### Step 5: Preprocess Data
 
