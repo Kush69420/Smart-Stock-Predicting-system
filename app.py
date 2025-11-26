@@ -474,6 +474,7 @@ def get_suppliers():
 
 @app.route('/api/add-product', methods=['POST'])
 def add_product():
+    conn = None
     try:
         data = request.get_json()
         product_name = data.get('product_name')
@@ -487,17 +488,16 @@ def add_product():
         if not all([product_name, category, unit_price, supplier_id]):
             return jsonify({'success': False, 'error': 'Missing required fields'}), 400
         
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
         try:
             unit_price = float(unit_price)
             initial_quantity = int(initial_quantity)
             min_stock_level = int(min_stock_level)
             reorder_point = int(reorder_point)
         except ValueError:
-            conn.close()
             return jsonify({'success': False, 'error': 'Invalid data types'}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
         
         cursor.execute(
             'INSERT INTO Products (ProductName, Category, UnitPrice, SupplierID) VALUES (?, ?, ?, ?)',
@@ -512,7 +512,6 @@ def add_product():
         )
         
         conn.commit()
-        conn.close()
         
         return jsonify({
             'success': True,
@@ -522,9 +521,12 @@ def add_product():
         })
     
     except Exception as e:
-        conn.rollback()
-        conn.close()
+        if conn:
+            conn.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
 
 @app.route('/api/dashboard-stats', methods=['GET'])
 def get_dashboard_stats():
@@ -589,6 +591,10 @@ def get_dashboard_stats():
     
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
