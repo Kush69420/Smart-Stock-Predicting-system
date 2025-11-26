@@ -28,7 +28,64 @@
         </div>
     </nav>
 
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--gradient-primary); border: none;">
+                    <h5 class="modal-title text-white" style="font-weight: 700;">➕ Add New Product</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newProductName" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="newProductName" placeholder="e.g., Wireless Mouse">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newProductCategory" class="form-label">Category</label>
+                        <input type="text" class="form-control" id="newProductCategory" placeholder="e.g., Electronics">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newProductPrice" class="form-label">Unit Price ($)</label>
+                        <input type="number" class="form-control" id="newProductPrice" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newProductSupplier" class="form-label">Supplier</label>
+                        <select class="form-select" id="newProductSupplier">
+                            <option value="">-- Select Supplier --</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newProductQuantity" class="form-label">Initial Stock Quantity</label>
+                        <input type="number" class="form-control" id="newProductQuantity" placeholder="100" value="100" min="0">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="newProductMinStock" class="form-label">Min Stock Level</label>
+                            <input type="number" class="form-control" id="newProductMinStock" placeholder="50" value="50" min="0">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="newProductReorder" class="form-label">Reorder Point</label>
+                            <input type="number" class="form-control" id="newProductReorder" placeholder="75" value="75" min="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNewProduct()">Add Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container-fluid mt-4 px-4">
+        <div class="row mb-4 g-4">
+            <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+                <h4 style="margin: 0; color: var(--text-primary);">📊 Inventory Dashboard</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    <span style="margin-right: 8px;">➕</span> Add Product
+                </button>
+            </div>
+        </div>
         <div class="row mb-4 g-4">
             <div class="col-md-4">
                 <div class="card summary-card bg-primary text-white glow-effect">
@@ -537,11 +594,91 @@
             });
         }
 
+        async function loadSuppliers() {
+            try {
+                const response = await fetch('/api/suppliers');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const select = document.getElementById('newProductSupplier');
+                    select.innerHTML = '<option value="">-- Select Supplier --</option>';
+                    data.suppliers.forEach(supplier => {
+                        const option = document.createElement('option');
+                        option.value = supplier.supplier_id;
+                        option.textContent = supplier.supplier_name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading suppliers:', error);
+            }
+        }
+
+        async function saveNewProduct() {
+            const productName = document.getElementById('newProductName').value.trim();
+            const category = document.getElementById('newProductCategory').value.trim();
+            const unitPrice = document.getElementById('newProductPrice').value;
+            const supplierId = document.getElementById('newProductSupplier').value;
+            const initialQuantity = document.getElementById('newProductQuantity').value;
+            const minStock = document.getElementById('newProductMinStock').value;
+            const reorderPoint = document.getElementById('newProductReorder').value;
+
+            if (!productName || !category || !unitPrice || !supplierId) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/add-product', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        product_name: productName,
+                        category: category,
+                        unit_price: parseFloat(unitPrice),
+                        supplier_id: parseInt(supplierId),
+                        initial_quantity: parseInt(initialQuantity),
+                        min_stock_level: parseInt(minStock),
+                        reorder_point: parseInt(reorderPoint)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`✅ Product "${data.product_name}" added successfully!`);
+                    
+                    document.getElementById('newProductName').value = '';
+                    document.getElementById('newProductCategory').value = '';
+                    document.getElementById('newProductPrice').value = '';
+                    document.getElementById('newProductSupplier').value = '';
+                    document.getElementById('newProductQuantity').value = '100';
+                    document.getElementById('newProductMinStock').value = '50';
+                    document.getElementById('newProductReorder').value = '75';
+                    
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
+                    modal.hide();
+                    
+                    loadDashboardStats();
+                    loadProducts();
+                    loadRestockAlerts();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error adding product:', error);
+                alert('Error adding product');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             updateTheme();
             loadDashboardStats();
             loadProducts();
             loadRestockAlerts();
+            loadSuppliers();
             
             setInterval(() => {
                 loadDashboardStats();

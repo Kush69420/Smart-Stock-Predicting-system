@@ -225,6 +225,80 @@ def add_sale():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/suppliers', methods=['GET'])
+def get_suppliers():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT SupplierID, SupplierName FROM Suppliers ORDER BY SupplierName')
+        suppliers = []
+        for row in cursor.fetchall():
+            suppliers.append({
+                'supplier_id': row['SupplierID'],
+                'supplier_name': row['SupplierName']
+            })
+        
+        conn.close()
+        return jsonify({'success': True, 'suppliers': suppliers})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/add-product', methods=['POST'])
+def add_product():
+    try:
+        data = request.get_json()
+        product_name = data.get('product_name')
+        category = data.get('category')
+        unit_price = data.get('unit_price')
+        supplier_id = data.get('supplier_id')
+        initial_quantity = data.get('initial_quantity', 100)
+        min_stock_level = data.get('min_stock_level', 50)
+        reorder_point = data.get('reorder_point', 75)
+        
+        if not all([product_name, category, unit_price, supplier_id]):
+            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        try:
+            unit_price = float(unit_price)
+            initial_quantity = int(initial_quantity)
+            min_stock_level = int(min_stock_level)
+            reorder_point = int(reorder_point)
+        except ValueError:
+            conn.close()
+            return jsonify({'success': False, 'error': 'Invalid data types'}), 400
+        
+        cursor.execute(
+            'INSERT INTO Products (ProductName, Category, UnitPrice, SupplierID) VALUES (?, ?, ?, ?)',
+            (product_name, category, unit_price, supplier_id)
+        )
+        
+        product_id = cursor.lastrowid
+        
+        cursor.execute(
+            'INSERT INTO Inventory (ProductID, QuantityAvailable, MinimumStockLevel, ReorderPoint, LastUpdated) VALUES (?, ?, ?, ?, ?)',
+            (product_id, initial_quantity, min_stock_level, reorder_point, datetime.now())
+        )
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Product added successfully',
+            'product_id': product_id,
+            'product_name': product_name
+        })
+    
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/dashboard-stats', methods=['GET'])
 def get_dashboard_stats():
     try:
