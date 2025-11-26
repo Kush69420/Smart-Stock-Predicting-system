@@ -58,7 +58,7 @@ A production-ready database-driven inventory management system that uses Gradien
 
 **Option A: Clone via Git**
 ```bash
-git clone <repository-url>
+git clone https://github.com/Kush69420/Smart-Stock-Predicting-system
 cd smart-inventory-system
 ```
 
