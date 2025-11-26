@@ -56,30 +56,6 @@
         </div>
     </div>
 
-    <div class="modal fade" id="recordSaleModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">💳 Record Sale</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <select class="form-select mb-3" id="saleProductSelect">
-                        <option value="">Select Product</option>
-                    </select>
-                    <input type="number" class="form-control mb-3" id="saleQuantity" placeholder="Quantity Sold" min="1">
-                    <div class="mb-3">
-                        <label>Amount: <span id="saleAmount">₹0.00</span></label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="recordSale()">Record Sale</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="modal fade" id="recordPurchaseModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -107,16 +83,26 @@
     <div class="container-fluid main-content">
         <div class="header-section">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>📊 Dashboard</h1>
+                <h1>📊 Smart Inventory</h1>
                 <div class="btn-group">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recordSaleModal">💳 Record Sale</button>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recordPurchaseModal">📦 Update Stock</button>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">➕ Add Product</button>
                 </div>
             </div>
         </div>
 
-        <div class="stats-row">
+        <ul class="nav nav-tabs mb-4" role="tablist" style="border-bottom: 2px solid #e0e0e0;">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-content" type="button" role="tab">📊 Dashboard</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales-content" type="button" role="tab">💳 Record Sale</button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="dashboard-content" role="tabpanel">
+                <div class="stats-row">
             <div class="stat-card">
                 <div class="stat-value" id="total-products">-</div>
                 <div class="stat-label">Total Products</div>
@@ -221,6 +207,24 @@
                 <ul class="top-list" id="top-products-list">
                     <li>Loading...</li>
                 </ul>
+            </div>
+        </div>
+            </div>
+
+            <div class="tab-pane fade" id="sales-content" role="tabpanel">
+                <div class="card-section" style="max-width: 600px;">
+                    <div class="section-header">💳 Record Sale</div>
+                    <div style="padding: 20px;">
+                        <select class="form-select mb-3" id="saleProductSelect">
+                            <option value="">Select Product</option>
+                        </select>
+                        <input type="number" class="form-control mb-3" id="saleQuantity" placeholder="Quantity Sold" min="1">
+                        <div class="mb-3">
+                            <label>Amount: <span id="saleAmount">₹0.00</span></label>
+                        </div>
+                        <button class="btn btn-primary w-100" onclick="recordSale()">Record Sale</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -386,7 +390,6 @@
                 const data = await res.json();
                 if (data.success) {
                     alert(`✅ Sale recorded! Amount: ₹${data.total_amount.toFixed(2)}`);
-                    bootstrap.Modal.getInstance(document.getElementById('recordSaleModal')).hide();
                     document.getElementById('saleProductSelect').value = '';
                     document.getElementById('saleQuantity').value = '';
                     document.getElementById('saleAmount').textContent = '₹0.00';
