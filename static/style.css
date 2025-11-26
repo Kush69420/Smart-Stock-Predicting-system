@@ -118,7 +118,7 @@ body {
 }
 
 .stat-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
     border-radius: 16px;
     padding: 1.5rem;
     position: relative;
@@ -132,12 +132,12 @@ body {
 }
 
 .stat-card.alert {
-    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
     color: white;
 }
 
 .stat-card.success {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    background: linear-gradient(135deg, #51cf66 0%, #69db7c 100%);
     color: white;
 }
 
@@ -257,7 +257,7 @@ body {
 }
 
 .data-table th {
-    background: var(--bg-primary);
+    background: #222222;
     padding: 0.75rem;
     text-align: left;
     font-weight: 600;
