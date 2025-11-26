@@ -56,7 +56,7 @@ body {
 
 .theme-toggle-label {
     position: relative;
-    width: 100px;
+    width: 60px;
     height: 32px;
     background-color: rgba(255,255,255,0.25);
     border-radius: 16px;
@@ -65,11 +65,8 @@ body {
     margin: 0;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: white;
+    justify-content: center;
+    font-size: 1rem;
 }
 
 .theme-toggle-label::after {
@@ -85,10 +82,12 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.toggle-text {
-    opacity: 0.6;
+.toggle-emoji {
+    position: absolute;
+    opacity: 0;
     transition: opacity 0.3s;
     z-index: 1;
+    font-size: 1.1rem;
 }
 
 .toggle-light {
@@ -96,7 +95,7 @@ body {
 }
 
 .toggle-dark {
-    opacity: 0.4;
+    opacity: 0;
 }
 
 .theme-toggle-checkbox:checked + .theme-toggle-label {
@@ -104,11 +103,11 @@ body {
 }
 
 .theme-toggle-checkbox:checked + .theme-toggle-label::after {
-    transform: translateX(48px);
+    transform: translateX(28px);
 }
 
 .theme-toggle-checkbox:checked + .theme-toggle-label .toggle-light {
-    opacity: 0.4;
+    opacity: 0;
 }
 
 .theme-toggle-checkbox:checked + .theme-toggle-label .toggle-dark {
