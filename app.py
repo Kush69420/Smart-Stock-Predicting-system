@@ -179,6 +179,39 @@ def get_sales_history(product_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/recent-sales', methods=['GET'])
+def get_recent_sales():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT 
+                s.SaleDate,
+                s.QuantitySold,
+                s.TotalAmount,
+                p.ProductName
+            FROM Sales s
+            JOIN Products p ON s.ProductID = p.ProductID
+            ORDER BY s.SaleDate DESC
+            LIMIT 50
+        ''')
+        
+        sales = []
+        for row in cursor.fetchall():
+            sales.append({
+                'sale_date': row['SaleDate'],
+                'quantity_sold': row['QuantitySold'],
+                'total_amount': row['TotalAmount'],
+                'product_name': row['ProductName']
+            })
+        
+        conn.close()
+        return jsonify({'success': True, 'sales': sales})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/add-sale', methods=['POST'])
 def add_sale():
     try:

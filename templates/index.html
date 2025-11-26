@@ -56,11 +56,38 @@
         </div>
     </div>
 
+    <div class="modal fade" id="recordSaleModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">💳 Record Sale</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <select class="form-select mb-3" id="saleProductSelect">
+                        <option value="">Select Product</option>
+                    </select>
+                    <input type="number" class="form-control mb-3" id="saleQuantity" placeholder="Quantity Sold" min="1">
+                    <div class="mb-3">
+                        <label>Amount: <span id="saleAmount">$0.00</span></label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="recordSale()">Record Sale</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container-fluid main-content">
         <div class="header-section">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>📊 Dashboard</h1>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">➕ Add Product</button>
+                <div class="btn-group">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recordSaleModal">💳 Record Sale</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">➕ Add Product</button>
+                </div>
             </div>
         </div>
 
@@ -139,6 +166,26 @@
                         </thead>
                         <tbody id="products-table">
                             <tr><td colspan="8" class="text-center">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-section full-width">
+                <div class="section-header">💳 Recent Sales & Billing</div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-history-table">
+                            <tr><td colspan="5" class="text-center">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -231,6 +278,64 @@
             } catch (e) { console.error(e); }
         }
 
+        async function loadRecentSales() {
+            try {
+                const res = await fetch('/api/recent-sales');
+                const data = await res.json();
+                if (data.success) {
+                    const tbody = document.getElementById('sales-history-table');
+                    tbody.innerHTML = data.sales.length === 0 ? '<tr><td colspan="5" class="text-center">No sales recorded yet</td></tr>' : data.sales.map(s => {
+                        const date = new Date(s.sale_date).toLocaleDateString();
+                        return `<tr><td>${date}</td><td>${s.product_name}</td><td>${s.quantity_sold}</td><td>$${(s.total_amount / s.quantity_sold).toFixed(2)}</td><td>$${s.total_amount.toFixed(2)}</td></tr>`;
+                    }).join('');
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('saleProductSelect').addEventListener('change', function() {
+            updateSaleAmount();
+        });
+
+        document.getElementById('saleQuantity').addEventListener('input', function() {
+            updateSaleAmount();
+        });
+
+        function updateSaleAmount() {
+            const productId = document.getElementById('saleProductSelect').value;
+            const quantity = parseInt(document.getElementById('saleQuantity').value) || 0;
+            if (productId) {
+                const product = allProducts.find(p => p.product_id === parseInt(productId));
+                if (product) {
+                    const amount = product.unit_price * quantity;
+                    document.getElementById('saleAmount').textContent = '$' + amount.toFixed(2);
+                }
+            } else {
+                document.getElementById('saleAmount').textContent = '$0.00';
+            }
+        }
+
+        async function recordSale() {
+            const productId = document.getElementById('saleProductSelect').value;
+            const quantity = parseInt(document.getElementById('saleQuantity').value);
+            if (!productId || !quantity || quantity <= 0) { alert('Select product and enter quantity'); return; }
+            try {
+                const res = await fetch('/api/add-sale', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({product_id: parseInt(productId), quantity_sold: quantity})
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`✅ Sale recorded! Amount: $${data.total_amount.toFixed(2)}`);
+                    bootstrap.Modal.getInstance(document.getElementById('recordSaleModal')).hide();
+                    document.getElementById('saleProductSelect').value = '';
+                    document.getElementById('saleQuantity').value = '';
+                    document.getElementById('saleAmount').textContent = '$0.00';
+                    loadDashboardStats(); loadProducts(); loadRestockAlerts(); loadRecentSales();
+                } else alert('Error: ' + data.error);
+            } catch (e) { console.error(e); }
+        }
+
         async function predictDemand() {
             const productId = document.getElementById('product-select').value;
             const daysAhead = parseInt(document.getElementById('days-ahead').value);
@@ -318,8 +423,16 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadDashboardStats(); loadProducts(); loadRestockAlerts(); loadSuppliers();
-            setInterval(() => { loadDashboardStats(); loadRestockAlerts(); }, 60000);
+            loadDashboardStats(); loadProducts(); loadRestockAlerts(); loadSuppliers(); loadRecentSales();
+            // Also populate sale product select when products load
+            const observer = setInterval(() => {
+                if (allProducts.length > 0) {
+                    const select = document.getElementById('saleProductSelect');
+                    select.innerHTML = '<option value="">Select Product</option>' + allProducts.map(p => `<option value="${p.product_id}">${p.product_name} ($${p.unit_price.toFixed(2)})</option>`).join('');
+                    clearInterval(observer);
+                }
+            }, 100);
+            setInterval(() => { loadDashboardStats(); loadRestockAlerts(); loadRecentSales(); }, 60000);
         });
     </script>
 </body>
