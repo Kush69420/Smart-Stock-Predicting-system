@@ -202,10 +202,10 @@ body {
 }
 
 .btn-secondary-custom {
-    background: transparent;
-    border: 2px solid var(--accent);
-    color: var(--accent);
-    padding: 10px 26px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 12px 28px;
     border-radius: 10px;
     font-weight: 600;
     font-size: 0.95rem;
@@ -214,7 +214,7 @@ body {
 }
 
 .btn-secondary-custom:hover {
-    background: var(--accent);
+    filter: brightness(1.1);
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
