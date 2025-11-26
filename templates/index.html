@@ -20,10 +20,10 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">📦 Smart Inventory</a>
+            <a class="navbar-brand" href="/">Smart Inventory</a>
             <span class="navbar-text">ML-Powered Predictive Restocking</span>
             <button class="theme-toggle" onclick="toggleTheme()">
-                <span id="themeIcon">🌙</span>
+                <span id="themeIcon">Light</span>
             </button>
         </div>
     </nav>
@@ -32,7 +32,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">➕ Add New Product</h5>
+                    <h5 class="modal-title">Add New Product</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -60,7 +60,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">📦 Update Stock (Purchase)</h5>
+                    <h5 class="modal-title">Update Stock</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -83,20 +83,20 @@
     <div class="container-fluid main-content">
         <div class="header-section">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>📊 Smart Inventory</h1>
+                <h1>Smart Inventory</h1>
                 <div class="btn-group">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recordPurchaseModal">📦 Update Stock</button>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">➕ Add Product</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recordPurchaseModal">Update Stock</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
                 </div>
             </div>
         </div>
 
         <ul class="nav nav-tabs mb-4" role="tablist" style="border-bottom: 2px solid #e0e0e0;">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-content" type="button" role="tab">📊 Dashboard</button>
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-content" type="button" role="tab">Dashboard</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales-content" type="button" role="tab">💳 Record Sale</button>
+                <button class="nav-link" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales-content" type="button" role="tab">Record Sale</button>
             </li>
         </ul>
 
@@ -106,23 +106,23 @@
             <div class="stat-card">
                 <div class="stat-value" id="total-products">-</div>
                 <div class="stat-label">Total Products</div>
-                <div class="stat-icon">📦</div>
+                <div class="stat-icon">📊</div>
             </div>
             <div class="stat-card alert">
                 <div class="stat-value" id="low-stock-alerts">-</div>
                 <div class="stat-label">Low Stock Alerts</div>
-                <div class="stat-icon">⚠️</div>
+                <div class="stat-icon">!</div>
             </div>
             <div class="stat-card success">
                 <div class="stat-value" id="weekly-sales">-</div>
                 <div class="stat-label">Weekly Sales</div>
-                <div class="stat-icon">💰</div>
+                <div class="stat-icon">₹</div>
             </div>
         </div>
 
         <div class="content-grid">
             <div class="card-section">
-                <div class="section-header">🚨 Restock Alerts</div>
+                <div class="section-header">Restock Alerts</div>
                 <div class="table-wrapper">
                     <table class="data-table">
                         <thead>
@@ -141,7 +141,7 @@
             </div>
 
             <div class="card-section">
-                <div class="section-header">🔮 Demand Prediction</div>
+                <div class="section-header">Demand Forecast</div>
                 <select class="form-select mb-2" id="product-select">
                     <option value="">Select Product</option>
                 </select>
@@ -154,13 +154,13 @@
         </div>
 
         <div class="card-section full-width">
-            <div class="section-header">📈 Prediction Chart</div>
+            <div class="section-header">Forecast Chart</div>
             <canvas id="demandChart"></canvas>
         </div>
 
         <div class="content-grid">
             <div class="card-section full-width">
-                <div class="section-header">📦 All Products</div>
+                <div class="section-header">All Products</div>
                 <div class="table-wrapper">
                     <table class="data-table">
                         <thead>
@@ -183,7 +183,7 @@
             </div>
 
             <div class="card-section">
-                <div class="section-header">🏆 Top Products</div>
+                <div class="section-header">Top Products</div>
                 <ul class="top-list" id="top-products-list">
                     <li>Loading...</li>
                 </ul>
@@ -193,7 +193,7 @@
 
             <div class="tab-pane fade" id="sales-content" role="tabpanel">
                 <div class="card-section" style="max-width: 600px;">
-                    <div class="section-header">💳 Record Sale</div>
+                    <div class="section-header">Record Sale</div>
                     <div style="padding: 20px;">
                         <select class="form-select mb-3" id="saleProductSelect">
                             <option value="">Select Product</option>
@@ -207,7 +207,7 @@
                 </div>
 
                 <div class="card-section full-width" style="margin-top: 30px;">
-                    <div class="section-header">📋 Recent Sales & Billing</div>
+                    <div class="section-header">Recent Sales & Billing</div>
                     <div class="table-wrapper">
                         <table class="data-table">
                             <thead>
@@ -239,7 +239,7 @@
         function toggleTheme() {
             isDarkMode = !isDarkMode;
             document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
-            document.getElementById('themeIcon').textContent = isDarkMode ? '☀️' : '🌙';
+            document.getElementById('themeIcon').textContent = isDarkMode ? 'Dark' : 'Light';
             localStorage.setItem('darkMode', isDarkMode);
             if (demandChart) updateChartTheme();
         }
@@ -264,9 +264,9 @@
                     document.getElementById('total-products').textContent = data.total_products;
                     document.getElementById('low-stock-alerts').textContent = data.low_stock_alerts;
                     document.getElementById('weekly-sales').textContent = '₹' + data.weekly_sales.toLocaleString('en-US', {minimumFractionDigits: 2});
-                    const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+                    const medals = ['#1', '#2', '#3', '#4', '#5'];
                     const list = document.getElementById('top-products-list');
-                    list.innerHTML = data.top_products.map((p, i) => `<li>${medals[i] || '📦'} ${p.product_name} (${p.total_sold})</li>`).join('');
+                    list.innerHTML = data.top_products.map((p, i) => `<li><strong>${medals[i]}</strong> ${p.product_name} (${p.total_sold})</li>`).join('');
                 }
             } catch (e) { console.error(e); }
         }
@@ -298,7 +298,7 @@
                 const data = await res.json();
                 const tbody = document.getElementById('restock-alerts-table');
                 if (data.success) {
-                    tbody.innerHTML = data.alerts.length === 0 ? '<tr><td colspan="4" class="text-center">✅ All products well-stocked!</td></tr>' : data.alerts.map(a => `<tr><td>${a.product_name}</td><td>${a.quantity_available}</td><td>${a.reorder_point}</td><td>${a.supplier_name}</td></tr>`).join('');
+                    tbody.innerHTML = data.alerts.length === 0 ? '<tr><td colspan="4" class="text-center">All products well-stocked</td></tr>' : data.alerts.map(a => `<tr><td>${a.product_name}</td><td>${a.quantity_available}</td><td>${a.reorder_point}</td><td>${a.supplier_name}</td></tr>`).join('');
                 }
             } catch (e) { console.error(e); }
         }
@@ -338,7 +338,7 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('✅ Sale deleted and inventory restored!');
+                    alert('Sale deleted and inventory restored');
                     loadDashboardStats(); loadProducts(); loadRestockAlerts(); loadRecentSales();
                 } else alert('Error: ' + data.error);
             } catch (e) { console.error(e); }
@@ -384,7 +384,7 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert(`✅ Stock updated! Added ${quantity} units. New Stock: ${data.new_quantity}`);
+                    alert(`Stock updated! Added ${quantity} units. New Stock: ${data.new_quantity}`);
                     bootstrap.Modal.getInstance(document.getElementById('recordPurchaseModal')).hide();
                     document.getElementById('purchaseProductSelect').value = '';
                     document.getElementById('purchaseQuantity').value = '';
@@ -406,7 +406,7 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert(`✅ Sale recorded! Amount: ₹${data.total_amount.toFixed(2)}`);
+                    alert(`Sale recorded! Amount: ₹${data.total_amount.toFixed(2)}`);
                     document.getElementById('saleProductSelect').value = '';
                     document.getElementById('saleQuantity').value = '';
                     document.getElementById('saleAmount').textContent = '₹0.00';
