@@ -26,40 +26,223 @@ A complete database-driven inventory management system that uses Gradient Boosti
 3. **Sales**: SaleID, ProductID, SaleDate, QuantitySold, TotalAmount
 4. **Suppliers**: SupplierID, SupplierName, ContactInfo, Email
 
-## Installation & Setup
+## Installation & Setup (Local Machine)
 
-### 1. Install Dependencies
-All dependencies are already installed in this Replit environment.
+### Prerequisites
 
-### 2. Initialize Database
+Before you begin, ensure you have the following installed on your device:
+- **Python 3.8 or higher** - Download from https://www.python.org/downloads/
+- **pip** (Python package manager - usually comes with Python)
+- **Git** (optional, for cloning the repository)
+
+### Step 1: Get the Project Files
+
+**Option A: Clone via Git**
+```bash
+git clone <repository-url>
+cd smart-inventory-system
+```
+
+**Option B: Download as ZIP**
+- Download the project files and extract them to a folder
+- Open terminal/command prompt and navigate to the project folder
+
+### Step 2: Create a Virtual Environment
+
+It's recommended to use a virtual environment to avoid conflicts with other Python projects.
+
+**On Windows:**
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+**On macOS/Linux:**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+You should see `(venv)` in your terminal prompt after activation.
+
+### Step 3: Install Dependencies
+
+With the virtual environment activated, install all required packages:
+```bash
+pip install -r requirements.txt
+```
+
+This installs:
+- Flask 3.0.0
+- scikit-learn 1.3.2
+- pandas 2.1.3
+- numpy 1.26.2
+
+### Step 4: Initialize the Database
+
+Create the SQLite database with sample data (10 products, 5 suppliers, 180 days of sales):
 ```bash
 python db_setup.py
 ```
-This creates the SQLite database, tables, and generates 180 days of realistic sales data for 10 products.
 
-### 3. Preprocess Data
+**Expected output:**
+```
+Database created successfully!
+Inserted 10 products
+Inserted 5 suppliers
+Generated 180 days of sales data
+```
+
+This creates a file called `inventory.db` in your project folder.
+
+### Step 5: Preprocess Data
+
+Extract and engineer features from the raw sales data:
 ```bash
 python data_prep.py
 ```
-Extracts features including time-based features and sales lag features.
 
-### 4. Train ML Model
+**Expected output:**
+```
+Loading sales data from database...
+Loaded [number] sales records
+Creating features (time-based and lag features)...
+Train set: [number] samples
+Test set: [number] samples
+```
+
+### Step 6: Train the ML Model
+
+Train the Gradient Boosting model on your data:
 ```bash
 python model.py
 ```
-Trains the GradientBoostingRegressor model and saves it as `inventory_model.pkl`.
 
-### 5. Evaluate Model
+**Expected output:**
+```
+Starting ML model training pipeline...
+Step 1: Loading and preprocessing data...
+Dataset info:
+  Total samples: [number]
+  Training samples: [number]
+  Test samples: [number]
+
+Step 2: Training model...
+Training Gradient Boosting Regressor...
+Parameters: n_estimators=100, learning_rate=0.1, max_depth=5
+
+Step 3: Evaluating model...
+MODEL EVALUATION METRICS
+Training Set Performance:
+  R² Score: [value]
+
+Test Set Performance:
+  R² Score: [value]
+
+Step 4: Saving model...
+Model saved to inventory_model.pkl
+```
+
+This creates a file called `inventory_model.pkl` - your trained model.
+
+### Step 7: (Optional) Evaluate Model Performance
+
+View detailed model accuracy and performance metrics:
 ```bash
 python evaluate.py
 ```
-Displays model performance metrics (MAE, RMSE, R² Score).
 
-### 6. Run Flask Application
+**This shows:**
+- R² Score (target: > 0.75)
+- Mean Absolute Error (MAE)
+- Root Mean Squared Error (RMSE)
+- Prediction samples
+- Error distribution analysis
+
+### Step 8: Run the Flask Application
+
+Start the web server:
 ```bash
 python app.py
 ```
-Access the dashboard at http://localhost:5000
+
+**Expected output:**
+```
+* Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+```
+
+### Step 9: Access the Dashboard
+
+Open your web browser and navigate to:
+```
+http://localhost:5000
+```
+
+You should see the Smart Inventory Dashboard with:
+- Summary cards (Total Products, Low Stock Alerts, Weekly Sales)
+- Restock alerts table
+- Demand prediction tool
+- Top products chart
+- Full inventory table
+
+### Complete Step-by-Step Summary
+
+For quick reference, here's the complete sequence of commands:
+
+```bash
+# 1. Navigate to project folder
+cd path/to/smart-inventory-system
+
+# 2. Create and activate virtual environment
+python -m venv venv
+# Windows: venv\Scripts\activate
+# macOS/Linux: source venv/bin/activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Setup database with sample data
+python db_setup.py
+
+# 5. Preprocess data
+python data_prep.py
+
+# 6. Train the model
+python model.py
+
+# 7. (Optional) Evaluate model
+python evaluate.py
+
+# 8. Run the application
+python app.py
+
+# 9. Open browser and go to http://localhost:5000
+```
+
+## Troubleshooting
+
+### Issue: "Python command not found"
+**Solution**: Python may not be in your system PATH. Try:
+- Windows: Use `python` or `py`
+- macOS/Linux: Use `python3`
+
+### Issue: "No module named 'flask'" after pip install
+**Solution**: Make sure your virtual environment is activated (look for `(venv)` in terminal)
+
+### Issue: "Port 5000 already in use"
+**Solution**: Flask is already running or another app uses port 5000
+- Stop other applications using port 5000
+- Or modify `app.py` to use a different port (change `port=5000` to `port=5001`)
+
+### Issue: "inventory.db not found" error
+**Solution**: Run `python db_setup.py` first to create the database
+
+### Issue: "inventory_model.pkl not found" error
+**Solution**: Run `python model.py` to train and save the model
+
+### Issue: "ModuleNotFoundError" when running scripts
+**Solution**: Ensure requirements are installed: `pip install -r requirements.txt`
 
 ## API Endpoints
 
