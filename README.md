@@ -122,7 +122,7 @@ This creates a file called `inventory.db` in your project folder.
      All prices converted to Indian Rupees (₹)
    ```
 
-**Note**: Prices are automatically converted from USD to Indian Rupees (1 USD ≈ ₹83)
+**Note**: Prices are imported as-is from the dataset
 
 **Choose one option:**
 - Use `python db_setup.py` for quick testing with synthetic sample data

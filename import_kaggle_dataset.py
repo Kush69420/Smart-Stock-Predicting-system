@@ -43,22 +43,18 @@ def import_kaggle_sales_inventory_dataset(csv_path):
         )
         supplier_id = 1
         
-        # Convert USD to INR (1 USD ≈ 83 INR)
-        usd_to_inr = 83
-        
         product_mapping = {}
         for idx, row in products_data.iterrows():
             product_name = str(row['Product_name']).strip()
             category = str(row['Product_category']).strip()
-            price_usd = float(row['Price'])
-            price_inr = price_usd * usd_to_inr
+            price = float(row['Price'])
             
             cursor.execute(
                 'INSERT INTO Products (ProductName, Category, UnitPrice, SupplierID) VALUES (?, ?, ?, ?)',
-                (product_name, category, price_inr, supplier_id)
+                (product_name, category, price, supplier_id)
             )
             product_id = cursor.lastrowid
-            product_mapping[product_name] = (product_id, price_inr)
+            product_mapping[product_name] = (product_id, price)
             
             # Add inventory for each product
             cursor.execute(
@@ -116,7 +112,6 @@ def import_kaggle_sales_inventory_dataset(csv_path):
         print(f"\n✓ Import successful!")
         print(f"  Total products: {product_count}")
         print(f"  Total sales: {total_sales}")
-        print(f"  All prices converted to Indian Rupees (₹)")
         
         conn.close()
         return True
