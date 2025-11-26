@@ -6,7 +6,9 @@ import numpy as np
 from datetime import datetime, timedelta
 import os
 
-app = Flask(__name__)
+app = Flask(__name__,
+            template_folder='../templates',
+            static_folder='../static')
 app.secret_key = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
 
 def load_model(filename='inventory_model.pkl'):

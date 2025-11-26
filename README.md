@@ -113,7 +113,7 @@ The model automatically downloads the real Kaggle dataset for training:
 ### Step 5: Initialize Database
 
 ```bash
-python db_setup.py
+python src/db_setup.py
 ```
 
 Creates `inventory.db` with sample data for the dashboard UI:
@@ -126,7 +126,7 @@ Creates `inventory.db` with sample data for the dashboard UI:
 The model automatically downloads the real Kaggle dataset and trains:
 
 ```bash
-python train_model_kaggle.py
+python src/train_model_kaggle.py
 ```
 
 This will:
@@ -137,13 +137,13 @@ This will:
 
 **Optional**: If you already have the CSV file, provide its path instead:
 ```bash
-python train_model_kaggle.py sales_inventory.csv
+python src/train_model_kaggle.py sales_inventory.csv
 ```
 
 ### Step 7: Run the Application
 
 ```bash
-python app.py
+python src/app.py
 ```
 
 Should output:
@@ -181,13 +181,13 @@ pip install -r requirements.txt
 # - macOS/Linux: chmod 600 ~/.kaggle/kaggle.json
 
 # 5. Initialize database with sample data
-python db_setup.py
+python src/db_setup.py
 
 # 6. Train ML model (auto-downloads from Kaggle)
-python train_model_kaggle.py
+python src/train_model_kaggle.py
 
 # 7. Run web application
-python app.py
+python src/app.py
 
 # 8. Open http://localhost:5000 in your browser
 ```
