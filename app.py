@@ -187,6 +187,7 @@ def get_recent_sales():
         
         cursor.execute('''
             SELECT 
+                s.SaleID,
                 s.SaleDate,
                 s.QuantitySold,
                 s.TotalAmount,
@@ -200,6 +201,7 @@ def get_recent_sales():
         sales = []
         for row in cursor.fetchall():
             sales.append({
+                'sale_id': row['SaleID'],
                 'sale_date': row['SaleDate'],
                 'quantity_sold': row['QuantitySold'],
                 'total_amount': row['TotalAmount'],
@@ -208,6 +210,46 @@ def get_recent_sales():
         
         conn.close()
         return jsonify({'success': True, 'sales': sales})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/delete-sale', methods=['POST'])
+def delete_sale():
+    try:
+        data = request.get_json()
+        sale_id = data.get('sale_id')
+        
+        if not sale_id:
+            return jsonify({'success': False, 'error': 'sale_id is required'}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT ProductID, QuantitySold FROM Sales WHERE SaleID = ?', (sale_id,))
+        result = cursor.fetchone()
+        
+        if not result:
+            conn.close()
+            return jsonify({'success': False, 'error': 'Sale not found'}), 404
+        
+        product_id = result['ProductID']
+        quantity_sold = result['QuantitySold']
+        
+        cursor.execute('DELETE FROM Sales WHERE SaleID = ?', (sale_id,))
+        
+        cursor.execute(
+            'UPDATE Inventory SET QuantityAvailable = QuantityAvailable + ?, LastUpdated = ? WHERE ProductID = ?',
+            (quantity_sold, datetime.now(), product_id)
+        )
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Sale deleted and inventory restored'
+        })
     
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
