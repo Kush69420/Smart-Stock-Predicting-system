@@ -73,16 +73,16 @@ def insert_sample_data(conn, cursor):
     )
     
     products = [
-        ('Wireless Mouse', 'Electronics', 29.99, 1),
-        ('USB Keyboard', 'Electronics', 49.99, 1),
-        ('Monitor Stand', 'Office Supplies', 34.99, 3),
-        ('Desk Lamp', 'Office Supplies', 24.99, 4),
-        ('External Hard Drive', 'Electronics', 89.99, 2),
-        ('Webcam HD', 'Electronics', 69.99, 1),
-        ('Office Chair Mat', 'Office Supplies', 39.99, 3),
-        ('Cable Organizer', 'Office Supplies', 14.99, 3),
-        ('Bluetooth Speaker', 'Electronics', 59.99, 5),
-        ('Smart Watch', 'Electronics', 199.99, 5)
+        ('Wireless Mouse', 'Electronics', 599, 1),
+        ('USB Keyboard', 'Electronics', 1299, 1),
+        ('Monitor Stand', 'Office Supplies', 899, 3),
+        ('Desk Lamp', 'Office Supplies', 599, 4),
+        ('External Hard Drive', 'Electronics', 4999, 2),
+        ('Webcam HD', 'Electronics', 2499, 1),
+        ('Office Chair Mat', 'Office Supplies', 1299, 3),
+        ('Cable Organizer', 'Office Supplies', 299, 3),
+        ('Bluetooth Speaker', 'Electronics', 1999, 5),
+        ('Smart Watch', 'Electronics', 9999, 5)
     ]
     
     cursor.executemany(
