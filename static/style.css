@@ -183,9 +183,9 @@ body {
 }
 
 .btn-primary-custom {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #b399ff 0%, #a8d8ff 100%);
     border: none;
-    color: white;
+    color: #2c1e6e;
     padding: 12px 28px;
     border-radius: 10px;
     font-weight: 600;
@@ -195,16 +195,16 @@ body {
 }
 
 .btn-primary-custom:hover {
-    filter: brightness(1.1);
+    filter: brightness(0.95);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    color: white;
+    box-shadow: 0 4px 12px rgba(179, 153, 255, 0.4);
+    color: #2c1e6e;
 }
 
 .btn-secondary-custom {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #b399ff 0%, #a8d8ff 100%);
     border: none;
-    color: white;
+    color: #2c1e6e;
     padding: 12px 28px;
     border-radius: 10px;
     font-weight: 600;
@@ -214,10 +214,10 @@ body {
 }
 
 .btn-secondary-custom:hover {
-    filter: brightness(1.1);
-    color: white;
+    filter: brightness(0.95);
+    color: #2c1e6e;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(179, 153, 255, 0.4);
 }
 
 .content-grid {
