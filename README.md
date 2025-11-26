@@ -80,11 +80,7 @@ This installs:
 
 ### Step 4: Initialize the Database
 
-Choose one of the following options:
-
-#### Option 1: Sample Data (Quick Testing)
-
-Create the SQLite database with synthetic sample data (10 products, 5 suppliers, 180 days of sales):
+Create the SQLite database with sample data:
 ```bash
 python db_setup.py
 ```
@@ -97,43 +93,7 @@ Inserted 5 suppliers
 Generated 180 days of sales data
 ```
 
-This creates a file called `inventory.db` in your project folder.
-
-#### Option 2: Real Kaggle Dataset (Recommended for Production)
-
-**Step 1: Create the database schema**
-```bash
-python db_setup.py
-```
-
-This creates the database structure (you'll get sample data, but we'll replace it next).
-
-**Step 2: Download the Kaggle dataset**
-- Go to: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
-- Click "Download" button (requires free Kaggle account)
-- Extract the CSV file
-
-**Step 3: Import the dataset**
-```bash
-python import_kaggle_dataset.py sales_inventory.csv
-```
-
-Replace `sales_inventory.csv` with the actual filename from Kaggle.
-
-**Expected output:**
-```
-Loading dataset from: sales_inventory.csv
-Imported [number] unique products
-Imported [number] sales transactions
-✓ Import successful!
-  Total products: [number]
-  Total sales: [number]
-```
-
-**Summary:**
-- Both options start with `python db_setup.py` (creates database schema)
-- Option 1: Done! Use the sample data
-- Option 2: Then run `python import_kaggle_dataset.py` to replace with Kaggle data
+This creates a file called `inventory.db` in your project folder with sample inventory data for the web interface.
 
 ### Step 5: Preprocess Data
 
