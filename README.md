@@ -107,35 +107,17 @@ Creates `inventory.db` with:
 
 ### Step 5: Train the ML Model
 
-**Quick Option (Sample Data):**
 ```bash
 python train_model_kaggle.py
 ```
 
-**Production Option (Real Kaggle Data - Recommended):**
-1. Download from Kaggle:
-   - https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
-   - Requires free Kaggle account
-2. Train on the CSV:
-   ```bash
-   python train_model_kaggle.py sales_inventory.csv
-   ```
+Creates `inventory_model.pkl` trained on your sample database.
 
-Creates `inventory_model.pkl` with trained model.
+**Note**: If you want to use real Kaggle data instead:
+1. Download from: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
+2. Run: `python train_model_kaggle.py sales_inventory.csv`
 
-### Step 6: (Optional) Evaluate Model
-
-```bash
-python evaluate.py
-```
-
-Shows:
-- R² Score (target: > 0.75)
-- Mean Absolute Error & RMSE
-- Prediction accuracy (within ±1, ±3, ±5 units)
-- Query performance (predictions per second)
-
-### Step 7: Run the Application
+### Step 6: Run the Application
 
 ```bash
 python app.py
@@ -144,19 +126,20 @@ python app.py
 Should output:
 ```
 * Running on http://127.0.0.1:5000
+* Running on http://0.0.0.0:5000
 ```
 
-### Step 8: Access the Dashboard
+### Step 7: Access the Dashboard
 
-Open browser: **http://localhost:5000**
+Open your browser and go to: **http://localhost:5000**
 
 ## Quick Start Summary
 
 ```bash
-# 1. Navigate to project
+# 1. Navigate to project folder
 cd path/to/smart-inventory-system
 
-# 2. Create and activate virtual environment
+# 2. Create virtual environment
 python -m venv venv
 # Windows: venv\Scripts\activate
 # macOS/Linux: source venv/bin/activate
@@ -164,20 +147,16 @@ python -m venv venv
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Setup database
+# 4. Create database with sample data
 python db_setup.py
 
-# 5. Train model (choose one):
-# Option A: Sample data
+# 5. Train ML model
 python train_model_kaggle.py
 
-# Option B: Real Kaggle data (after downloading CSV)
-python train_model_kaggle.py sales_inventory.csv
-
-# 6. Run application
+# 6. Run web application
 python app.py
 
-# 7. Open http://localhost:5000 in browser
+# 7. Open http://localhost:5000 in your browser
 ```
 
 ## Dashboard Features
