@@ -7,63 +7,40 @@ import os
 
 def download_kaggle_dataset():
     """Download dataset from Kaggle using API."""
-    print("="*60)
-    print("DOWNLOADING KAGGLE DATASET")
-    print("="*60)
-    
     try:
         import kaggle
     except ImportError:
-        print("Error: kaggle package not installed")
-        print("Install it with: pip install kaggle")
+        print("Error: kaggle package not installed. Install: pip install kaggle")
         return None
     
     try:
-        # Download dataset
-        print("\nDownloading from Kaggle...")
         kaggle.api.dataset_download_files(
             'yukisim/sales-and-inventory-dataset',
             path='.',
             unzip=True
         )
-        print("✓ Dataset downloaded successfully")
         
-        # Find CSV file
         csv_files = [f for f in os.listdir('.') if f.endswith('.csv')]
         if not csv_files:
             print("Error: No CSV file found after download")
             return None
         
-        csv_path = csv_files[0]
-        print(f"✓ Found CSV file: {csv_path}")
-        return csv_path
+        return csv_files[0]
         
     except Exception as e:
-        print(f"Error downloading dataset: {e}")
-        print("\nMake sure you have:")
-        print("1. Kaggle account (https://www.kaggle.com)")
-        print("2. API token downloaded from account settings")
-        print("3. Token saved at ~/.kaggle/kaggle.json")
+        print(f"Error: {e}. Ensure Kaggle API token at ~/.kaggle/kaggle.json")
         return None
 
 def train_model_on_kaggle_data(csv_path=None):
     """Train ML model on Kaggle dataset."""
     
-    # Download if not provided
     if csv_path is None:
         csv_path = download_kaggle_dataset()
         if csv_path is None:
             return False
     
-    print("\n" + "="*60)
-    print("TRAINING MODEL ON KAGGLE DATA")
-    print("="*60)
-    
-    print(f"\nLoading dataset from: {csv_path}")
+    print(f"Loading dataset from: {csv_path}")
     df = pd.read_csv(csv_path)
-    
-    print(f"Dataset shape: {df.shape}")
-    print(f"Columns: {df.columns.tolist()}")
     
     # Map CSV columns to our expected format
     df_renamed = df.copy()
@@ -106,8 +83,6 @@ def train_model_on_kaggle_data(csv_path=None):
     # Convert date column
     df_renamed['SaleDate'] = pd.to_datetime(df_renamed['SaleDate'])
     
-    # Create features for ML model
-    print("\nCreating features...")
     df_with_features = df_renamed.copy()
     
     df_with_features['DayOfWeek'] = df_with_features['SaleDate'].dt.dayofweek
@@ -152,18 +127,6 @@ def train_model_on_kaggle_data(csv_path=None):
     X_test = test_df[feature_columns]
     y_test = test_df['Quantity']
     
-    print(f"\nDataset Info:")
-    print(f"  Total samples: {len(df_with_features)}")
-    print(f"  Training samples: {len(X_train)}")
-    print(f"  Test samples: {len(X_test)}")
-    print(f"  Unique products: {df_with_features['ProductID'].nunique()}")
-    
-    # Train model
-    print("\n" + "="*60)
-    print("TRAINING GRADIENT BOOSTING MODEL")
-    print("="*60)
-    print("Parameters: n_estimators=100, learning_rate=0.1, max_depth=5")
-    
     model = GradientBoostingRegressor(
         n_estimators=100,
         learning_rate=0.1,
@@ -171,13 +134,8 @@ def train_model_on_kaggle_data(csv_path=None):
         random_state=42
     )
     
+    print(f"Training on {len(X_train)} samples...")
     model.fit(X_train, y_train)
-    print("Model training complete!")
-    
-    # Evaluate
-    print("\n" + "="*60)
-    print("MODEL EVALUATION METRICS")
-    print("="*60)
     
     y_train_pred = model.predict(X_train)
     y_test_pred = model.predict(X_test)
@@ -190,35 +148,13 @@ def train_model_on_kaggle_data(csv_path=None):
     test_rmse = np.sqrt(mean_squared_error(y_test, y_test_pred))
     test_r2 = r2_score(y_test, y_test_pred)
     
-    print("\nTraining Set Performance:")
-    print(f"  MAE (Mean Absolute Error): {train_mae:.4f}")
-    print(f"  RMSE (Root Mean Squared Error): {train_rmse:.4f}")
-    print(f"  R² Score: {train_r2:.4f}")
-    
-    print("\nTest Set Performance:")
-    print(f"  MAE (Mean Absolute Error): {test_mae:.4f}")
-    print(f"  RMSE (Root Mean Squared Error): {test_rmse:.4f}")
-    print(f"  R² Score: {test_r2:.4f}")
-    
-    if test_r2 > 0.75:
-        print(f"\n✓ EXCELLENT: Model achieves R² > 0.75 (target met!)")
-    elif test_r2 > 0.60:
-        print(f"\n✓ GOOD: Model achieves R² > 0.60")
-    else:
-        print(f"\n⚠ WARNING: Model R² is below 0.60")
-    
-    # Save model
-    print("\n" + "="*60)
-    print("SAVING MODEL")
-    print("="*60)
+    print(f"Test Performance: R²={test_r2:.4f}, MAE={test_mae:.2f} units")
     
     with open('inventory_model.pkl', 'wb') as f:
         pickle.dump(model, f)
-    print("Model saved to inventory_model.pkl")
     
-    print("\n" + "="*60)
-    print("MODEL TRAINING COMPLETE!")
-    print("="*60)
+    if test_r2 > 0.75:
+        print(f"✓ Model ready (R² = {test_r2:.4f})")
     
     return True
 
@@ -236,12 +172,6 @@ if __name__ == '__main__':
         # Auto-download from Kaggle
         success = train_model_on_kaggle_data()
     
-    if success:
-        print("\nNext steps:")
-        print("1. ✓ Model trained on real Kaggle data")
-        print("2. Run: python app.py to start the dashboard")
-        print("3. The dashboard uses sample data for UI demo")
-        print("   while predictions use Kaggle-trained model")
-    else:
-        print("\nModel training failed. Please check the error messages above.")
+    if not success:
+        print("Model training failed.")
         sys.exit(1)

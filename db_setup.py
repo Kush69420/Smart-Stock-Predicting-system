@@ -158,21 +158,14 @@ def generate_sales_data(conn, cursor, days=180):
                 )
     
     conn.commit()
-    print(f"Generated {days} days of sales data for {len(products)} products")
 
 if __name__ == '__main__':
-    print("Creating database and tables...")
     conn, cursor = create_database()
-    
-    print("Inserting sample data (suppliers, products, inventory)...")
     insert_sample_data(conn, cursor)
-    
-    print("Generating 180 days of sales history with realistic patterns...")
     generate_sales_data(conn, cursor, days=180)
     
     cursor.execute('SELECT COUNT(*) FROM Sales')
     sales_count = cursor.fetchone()[0]
-    print(f"\nDatabase setup complete!")
-    print(f"Total sales records created: {sales_count}")
+    print(f"✓ Database ready with {sales_count} sales records")
     
     conn.close()
