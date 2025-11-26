@@ -234,6 +234,16 @@
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
         let allProducts = [];
 
+        function formatIndianNumber(number) {
+            if (number >= 10000000) {
+                return (number / 10000000).toFixed(2) + ' Cr';
+            } else if (number >= 100000) {
+                return (number / 100000).toFixed(2) + ' L';
+            } else {
+                return number.toFixed(2);
+            }
+        }
+
         function toggleTheme() {
             isDarkMode = !isDarkMode;
             document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
@@ -274,7 +284,7 @@
                 if (data.success) {
                     document.getElementById('total-products').textContent = data.total_products;
                     document.getElementById('low-stock-alerts').textContent = data.low_stock_alerts;
-                    document.getElementById('weekly-sales').textContent = '₹' + data.weekly_sales.toLocaleString('en-US', {minimumFractionDigits: 2});
+                    document.getElementById('weekly-sales').textContent = '₹' + formatIndianNumber(data.weekly_sales);
                     
                     const textColor = isDarkMode ? '#ffffff' : '#1a202c';
                     const gridColor = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
