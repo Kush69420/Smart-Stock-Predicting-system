@@ -1,13 +1,125 @@
 from flask import Flask, render_template, jsonify, request
 import sqlite3
 import pickle
+import pandas as pd
+import numpy as np
 from datetime import datetime, timedelta
 import os
-from model import predict_future_demand, load_model
-from data_prep import load_sales_data, create_features
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
+
+def load_model(filename='inventory_model.pkl'):
+    """Load trained ML model"""
+    try:
+        with open(filename, 'rb') as f:
+            model = pickle.load(f)
+        return model
+    except FileNotFoundError:
+        return None
+
+def load_sales_data():
+    """Load sales data from database"""
+    conn = sqlite3.connect('inventory.db')
+    query = '''
+        SELECT 
+            s.SaleID,
+            s.ProductID,
+            s.SaleDate,
+            s.QuantitySold,
+            s.TotalAmount,
+            p.ProductName,
+            p.Category,
+            p.UnitPrice
+        FROM Sales s
+        JOIN Products p ON s.ProductID = p.ProductID
+        ORDER BY s.SaleDate
+    '''
+    df = pd.read_sql_query(query, conn)
+    conn.close()
+    df['SaleDate'] = pd.to_datetime(df['SaleDate'])
+    return df
+
+def create_features(df):
+    """Create ML features from sales data"""
+    df = df.copy()
+    
+    df['DayOfWeek'] = df['SaleDate'].dt.dayofweek
+    df['Month'] = df['SaleDate'].dt.month
+    df['WeekOfYear'] = df['SaleDate'].dt.isocalendar().week
+    df['DayOfMonth'] = df['SaleDate'].dt.day
+    df['Quarter'] = df['SaleDate'].dt.quarter
+    
+    product_dfs = []
+    for product_id in df['ProductID'].unique():
+        product_df = df[df['ProductID'] == product_id].copy()
+        product_df = product_df.sort_values(by='SaleDate')
+        
+        product_df['Sales_Lag_7'] = product_df['QuantitySold'].shift(7)
+        product_df['Sales_Lag_14'] = product_df['QuantitySold'].shift(14)
+        product_df['Sales_Lag_30'] = product_df['QuantitySold'].shift(30)
+        
+        product_df['Sales_Rolling_7'] = product_df['QuantitySold'].rolling(window=7, min_periods=1).mean()
+        product_df['Sales_Rolling_30'] = product_df['QuantitySold'].rolling(window=30, min_periods=1).mean()
+        
+        product_dfs.append(product_df)
+    
+    df_with_features = pd.concat(product_dfs, ignore_index=True)
+    df_with_features = df_with_features.bfill().fillna(0)
+    return df_with_features
+
+def predict_future_demand(model, product_id, days_ahead=7, df_with_features=None):
+    """Predict future demand for a product"""
+    if model is None:
+        return []
+    
+    if df_with_features is None:
+        df = load_sales_data()
+        df_with_features = create_features(df)
+    
+    product_data = df_with_features[df_with_features['ProductID'] == product_id].copy()
+    product_data = product_data.sort_values(by='SaleDate')
+    
+    if len(product_data) == 0:
+        return []
+    
+    last_row = product_data.iloc[-1]
+    predictions = []
+    
+    feature_columns = [
+        'ProductID', 'DayOfWeek', 'Month', 'WeekOfYear', 'DayOfMonth', 'Quarter',
+        'Sales_Lag_7', 'Sales_Lag_14', 'Sales_Lag_30',
+        'Sales_Rolling_7', 'Sales_Rolling_30'
+    ]
+    
+    recent_sales = product_data['QuantitySold'].tail(30).tolist()
+    last_date = last_row['SaleDate']
+    
+    for day in range(1, days_ahead + 1):
+        future_date = last_date + timedelta(days=day)
+        
+        features = {
+            'ProductID': product_id,
+            'DayOfWeek': future_date.dayofweek,
+            'Month': future_date.month,
+            'WeekOfYear': future_date.isocalendar()[1],
+            'DayOfMonth': future_date.day,
+            'Quarter': (future_date.month - 1) // 3 + 1,
+            'Sales_Lag_7': recent_sales[-7] if len(recent_sales) >= 7 else recent_sales[-1],
+            'Sales_Lag_14': recent_sales[-14] if len(recent_sales) >= 14 else recent_sales[-1],
+            'Sales_Lag_30': recent_sales[-30] if len(recent_sales) >= 30 else recent_sales[-1],
+            'Sales_Rolling_7': np.mean(recent_sales[-7:]) if len(recent_sales) >= 7 else np.mean(recent_sales),
+            'Sales_Rolling_30': np.mean(recent_sales[-30:]) if len(recent_sales) >= 30 else np.mean(recent_sales)
+        }
+        
+        X_future = pd.DataFrame([[features[col] for col in feature_columns]], columns=feature_columns)
+        prediction = model.predict(X_future)[0]
+        prediction = max(0, int(round(prediction)))
+        
+        predictions.append(prediction)
+        recent_sales.append(prediction)
+    
+    return predictions
 
 def get_db_connection():
     conn = sqlite3.connect('inventory.db')
