@@ -39,7 +39,7 @@ Before you begin, ensure you have the following installed on your device:
 
 **Option A: Clone via Git**
 ```bash
-git clone <repository-url>
+git clone https://github.com/Kush69420/Smart-Stock-Predicting-system
 cd smart-inventory-system
 ```
 
