@@ -239,19 +239,42 @@ body {
     padding: 1rem;
     vertical-align: middle;
     border-color: var(--border-color);
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
+}
+
+.table th {
+    color: var(--text-primary) !important;
+}
+
+.table a {
+    color: var(--accent-color) !important;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(0, 0, 0, 0.02);
+    color: var(--text-primary) !important;
 }
 
 [data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(255, 255, 255, 0.02);
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table-striped tbody tr {
+    color: var(--text-primary) !important;
 }
 
 .table-hover tbody tr:hover {
     background-color: rgba(102, 126, 234, 0.1);
+    color: var(--text-primary) !important;
+}
+
+.table-danger {
+    color: var(--text-primary) !important;
+}
+
+.text-muted {
+    color: var(--text-secondary) !important;
 }
 
 .btn-primary {
