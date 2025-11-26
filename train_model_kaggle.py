@@ -3,19 +3,63 @@ import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import pickle
-from datetime import datetime, timedelta
+import os
 
-def train_model_on_kaggle_data(csv_path):
-    """
-    Train ML model on Kaggle dataset without modifying the database.
-    This allows using real data for model training while keeping sample data in the database.
-    """
-    
+def download_kaggle_dataset():
+    """Download dataset from Kaggle using API."""
     print("="*60)
+    print("DOWNLOADING KAGGLE DATASET")
+    print("="*60)
+    
+    try:
+        import kaggle
+    except ImportError:
+        print("Error: kaggle package not installed")
+        print("Install it with: pip install kaggle")
+        return None
+    
+    try:
+        # Download dataset
+        print("\nDownloading from Kaggle...")
+        kaggle.api.dataset_download_files(
+            'yukisim/sales-and-inventory-dataset',
+            path='.',
+            unzip=True
+        )
+        print("✓ Dataset downloaded successfully")
+        
+        # Find CSV file
+        csv_files = [f for f in os.listdir('.') if f.endswith('.csv')]
+        if not csv_files:
+            print("Error: No CSV file found after download")
+            return None
+        
+        csv_path = csv_files[0]
+        print(f"✓ Found CSV file: {csv_path}")
+        return csv_path
+        
+    except Exception as e:
+        print(f"Error downloading dataset: {e}")
+        print("\nMake sure you have:")
+        print("1. Kaggle account (https://www.kaggle.com)")
+        print("2. API token downloaded from account settings")
+        print("3. Token saved at ~/.kaggle/kaggle.json")
+        return None
+
+def train_model_on_kaggle_data(csv_path=None):
+    """Train ML model on Kaggle dataset."""
+    
+    # Download if not provided
+    if csv_path is None:
+        csv_path = download_kaggle_dataset()
+        if csv_path is None:
+            return False
+    
+    print("\n" + "="*60)
     print("TRAINING MODEL ON KAGGLE DATA")
     print("="*60)
     
-    print(f"\nLoading Kaggle dataset from: {csv_path}")
+    print(f"\nLoading dataset from: {csv_path}")
     df = pd.read_csv(csv_path)
     
     print(f"Dataset shape: {df.shape}")
@@ -178,141 +222,26 @@ def train_model_on_kaggle_data(csv_path):
     
     return True
 
-def train_model_on_database():
-    """Train ML model on sample data from database if no Kaggle CSV provided."""
-    import sqlite3
-    
-    print("="*60)
-    print("TRAINING MODEL ON SAMPLE DATABASE")
-    print("="*60)
-    
-    # Connect to database
-    conn = sqlite3.connect('inventory.db')
-    conn.row_factory = sqlite3.Row
-    
-    # Query sales data
-    query = """
-    SELECT s.ProductID, s.SaleDate, s.Quantity
-    FROM Sales s
-    ORDER BY s.SaleDate
-    """
-    
-    df = pd.read_sql_query(query, conn)
-    conn.close()
-    
-    if df.empty:
-        print("Error: No sales data found in database. Run db_setup.py first.")
-        return False
-    
-    print(f"Loaded {len(df)} records from inventory.db")
-    
-    # Convert date column
-    df['SaleDate'] = pd.to_datetime(df['SaleDate'])
-    
-    # Create features
-    print("\nCreating features...")
-    df_with_features = df.copy()
-    
-    df_with_features['DayOfWeek'] = df_with_features['SaleDate'].dt.dayofweek
-    df_with_features['Month'] = df_with_features['SaleDate'].dt.month
-    df_with_features['WeekOfYear'] = df_with_features['SaleDate'].dt.isocalendar().week
-    df_with_features['DayOfMonth'] = df_with_features['SaleDate'].dt.day
-    df_with_features['Quarter'] = df_with_features['SaleDate'].dt.quarter
-    
-    # Create lag and rolling features per product
-    product_dfs = []
-    for product_id in df_with_features['ProductID'].unique():
-        product_df = df_with_features[df_with_features['ProductID'] == product_id].copy()
-        product_df = product_df.sort_values(by='SaleDate')
-        
-        product_df['Sales_Lag_7'] = product_df['Quantity'].shift(7)
-        product_df['Sales_Lag_14'] = product_df['Quantity'].shift(14)
-        product_df['Sales_Lag_30'] = product_df['Quantity'].shift(30)
-        
-        product_df['Sales_Rolling_7'] = product_df['Quantity'].rolling(window=7, min_periods=1).mean()
-        product_df['Sales_Rolling_30'] = product_df['Quantity'].rolling(window=30, min_periods=1).mean()
-        
-        product_dfs.append(product_df)
-    
-    df_with_features = pd.concat(product_dfs, ignore_index=True)
-    df_with_features = df_with_features.bfill().fillna(0)
-    
-    # Train/test split
-    df_with_features = df_with_features.sort_values(by='SaleDate')
-    split_index = int(len(df_with_features) * 0.75)
-    
-    train_df = df_with_features.iloc[:split_index]
-    test_df = df_with_features.iloc[split_index:]
-    
-    feature_columns = [
-        'ProductID', 'DayOfWeek', 'Month', 'WeekOfYear', 'DayOfMonth', 'Quarter',
-        'Sales_Lag_7', 'Sales_Lag_14', 'Sales_Lag_30',
-        'Sales_Rolling_7', 'Sales_Rolling_30'
-    ]
-    
-    X_train = train_df[feature_columns]
-    y_train = train_df['Quantity']
-    X_test = test_df[feature_columns]
-    y_test = test_df['Quantity']
-    
-    print(f"\nDataset Info:")
-    print(f"  Total samples: {len(df_with_features)}")
-    print(f"  Training samples: {len(X_train)}")
-    print(f"  Test samples: {len(X_test)}")
-    
-    # Train model
-    print("\n" + "="*60)
-    print("TRAINING GRADIENT BOOSTING MODEL")
-    print("="*60)
-    
-    model = GradientBoostingRegressor(
-        n_estimators=100,
-        learning_rate=0.1,
-        max_depth=5,
-        random_state=42
-    )
-    
-    model.fit(X_train, y_train)
-    
-    # Evaluate
-    print("\nTest Set Performance:")
-    y_test_pred = model.predict(X_test)
-    test_r2 = r2_score(y_test, y_test_pred)
-    test_mae = mean_absolute_error(y_test, y_test_pred)
-    test_rmse = np.sqrt(mean_squared_error(y_test, y_test_pred))
-    
-    print(f"  R² Score: {test_r2:.4f}")
-    print(f"  MAE: {test_mae:.4f}")
-    print(f"  RMSE: {test_rmse:.4f}")
-    
-    # Save model
-    with open('inventory_model.pkl', 'wb') as f:
-        pickle.dump(model, f)
-    print("\nModel saved to inventory_model.pkl")
-    
-    return True
-
 if __name__ == '__main__':
     import sys
     
     if len(sys.argv) > 1:
-        # Use provided Kaggle CSV
+        # Use provided CSV path
         csv_path = sys.argv[1]
+        if not os.path.exists(csv_path):
+            print(f"Error: File not found: {csv_path}")
+            sys.exit(1)
         success = train_model_on_kaggle_data(csv_path)
-        if success:
-            print("\nNext steps:")
-            print("1. ✓ Model trained on real Kaggle data")
-            print("2. ✓ Database contains sample data (for UI demo)")
-            print("3. Run: python app.py to start the dashboard")
     else:
-        # Fallback to database
-        print("\nNo CSV file provided. Training on sample database...")
-        print("Tip: For production accuracy, download Kaggle data:")
-        print("  https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset")
-        print("  Then run: python train_model_kaggle.py sales_inventory.csv\n")
-        
-        success = train_model_on_database()
-        if success:
-            print("\nNext steps:")
-            print("1. ✓ Model trained on sample database data")
-            print("2. Run: python app.py to start the dashboard")
+        # Auto-download from Kaggle
+        success = train_model_on_kaggle_data()
+    
+    if success:
+        print("\nNext steps:")
+        print("1. ✓ Model trained on real Kaggle data")
+        print("2. Run: python app.py to start the dashboard")
+        print("3. The dashboard uses sample data for UI demo")
+        print("   while predictions use Kaggle-trained model")
+    else:
+        print("\nModel training failed. Please check the error messages above.")
+        sys.exit(1)

@@ -105,26 +105,37 @@ Creates `inventory.db` with:
 - 5 suppliers
 - 1,800 sales transactions (180 days)
 
-### Step 5: Download Kaggle Dataset
+### Step 5: Set Up Kaggle API Credentials
 
-1. Go to: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
-2. Click "Download" (requires free Kaggle account)
-3. Extract the CSV file to your project folder
+The model automatically downloads the dataset from Kaggle using the API:
 
-### Step 6: Train the ML Model on Real Data
+1. Create free Kaggle account: https://www.kaggle.com
+2. Go to Account Settings → API → "Create New API Token"
+3. This downloads `kaggle.json` → Save it at: `~/.kaggle/kaggle.json`
+   - **Windows**: `C:\Users\YourUsername\.kaggle\kaggle.json`
+   - **macOS/Linux**: `/home/YourUsername/.kaggle/kaggle.json`
+4. Set permissions: `chmod 600 ~/.kaggle/kaggle.json`
+
+### Step 6: Install Kaggle Package
 
 ```bash
-python train_model_kaggle.py sales_inventory.csv
+pip install kaggle
 ```
 
-This trains the model on the real Kaggle dataset for production-level accuracy.
+### Step 7: Train the ML Model
 
-**Alternative (Quick Testing)**: If you want to skip Kaggle data and test with sample data:
+The script automatically downloads and trains on Kaggle data:
+
 ```bash
 python train_model_kaggle.py
 ```
 
-### Step 7: Run the Application
+**Optional**: If you already have the CSV file, provide its path:
+```bash
+python train_model_kaggle.py sales_inventory.csv
+```
+
+### Step 8: Run the Application
 
 ```bash
 python app.py
@@ -136,7 +147,7 @@ Should output:
 * Running on http://0.0.0.0:5000
 ```
 
-### Step 8: Access the Dashboard
+### Step 9: Access the Dashboard
 
 Open your browser and go to: **http://localhost:5000**
 
@@ -154,20 +165,25 @@ python -m venv venv
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Create database with sample data (for UI demo)
+# 4. Install Kaggle package
+pip install kaggle
+
+# 5. Setup Kaggle API credentials
+# - Create account at https://www.kaggle.com
+# - Download API token from Account Settings → API
+# - Save at ~/.kaggle/kaggle.json
+# - chmod 600 ~/.kaggle/kaggle.json (macOS/Linux)
+
+# 6. Create database with sample data (for UI demo)
 python db_setup.py
 
-# 5. Download Kaggle dataset
-# - Go to: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
-# - Extract sales_inventory.csv to project folder
+# 7. Train ML model (auto-downloads from Kaggle)
+python train_model_kaggle.py
 
-# 6. Train ML model on real Kaggle data
-python train_model_kaggle.py sales_inventory.csv
-
-# 7. Run web application
+# 8. Run web application
 python app.py
 
-# 8. Open http://localhost:5000 in your browser
+# 9. Open http://localhost:5000 in your browser
 ```
 
 ## Dashboard Features
