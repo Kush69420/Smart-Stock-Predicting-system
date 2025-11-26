@@ -1,58 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Inventory Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
-                <strong>📦 Smart Inventory System</strong>
+                <span class="brand-icon">📦</span>
+                <span>Smart Inventory</span>
             </a>
-            <span class="navbar-text text-white">
-                ML-Powered Predictive Restocking
-            </span>
+            <div class="d-flex align-items-center gap-3">
+                <span class="navbar-text d-none d-md-block">
+                    ML-Powered Predictive Restocking
+                </span>
+                <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+                    <span id="themeIcon">🌙</span>
+                    <span>Dark Mode</span>
+                </button>
+            </div>
         </div>
     </nav>
 
-    <div class="container-fluid mt-4">
-        <div class="row mb-4">
+    <div class="container-fluid mt-4 px-4">
+        <div class="row mb-4 g-4">
             <div class="col-md-4">
-                <div class="card summary-card bg-primary text-white">
+                <div class="card summary-card bg-primary text-white glow-effect">
                     <div class="card-body">
                         <h5 class="card-title">Total Products</h5>
                         <h2 class="card-text" id="total-products">-</h2>
+                        <span class="stats-icon">📊</span>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card summary-card bg-danger text-white">
+                <div class="card summary-card bg-danger text-white glow-effect">
                     <div class="card-body">
                         <h5 class="card-title">Low Stock Alerts</h5>
                         <h2 class="card-text" id="low-stock-alerts">-</h2>
+                        <span class="stats-icon">⚠️</span>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card summary-card bg-success text-white">
+                <div class="card summary-card bg-success text-white glow-effect">
                     <div class="card-body">
                         <h5 class="card-title">Sales (This Week)</h5>
                         <h2 class="card-text" id="weekly-sales">-</h2>
+                        <span class="stats-icon">💰</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-4">
+        <div class="row mb-4 g-4">
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card h-100">
                     <div class="card-header bg-danger text-white">
-                        <h5 class="mb-0">🚨 Restock Alerts</h5>
+                        <span style="font-size: 1.3rem;">🚨</span>
+                        <h5>Restock Alerts</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -67,7 +79,7 @@
                                 </thead>
                                 <tbody id="restock-alerts-table">
                                     <tr>
-                                        <td colspan="4" class="text-center">Loading...</td>
+                                        <td colspan="4" class="text-center py-4">Loading...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -77,37 +89,41 @@
             </div>
 
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card h-100">
                     <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">🔮 Demand Prediction</h5>
+                        <span style="font-size: 1.3rem;">🔮</span>
+                        <h5>Demand Prediction</h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label for="product-select" class="form-label">Select Product:</label>
+                            <label for="product-select" class="form-label">Select Product</label>
                             <select class="form-select" id="product-select">
                                 <option value="">Loading products...</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="days-ahead" class="form-label">Days Ahead:</label>
+                            <label for="days-ahead" class="form-label">Days Ahead</label>
                             <input type="number" class="form-control" id="days-ahead" value="7" min="1" max="30">
                         </div>
-                        <button class="btn btn-primary" onclick="predictDemand()">Predict Demand</button>
+                        <button class="btn btn-primary w-100" onclick="predictDemand()">
+                            <span style="margin-right: 8px;">🎯</span> Predict Demand
+                        </button>
                         
-                        <div id="prediction-result" class="mt-3" style="display: none;">
-                            <h6>Predicted Demand:</h6>
-                            <div id="prediction-values"></div>
+                        <div id="prediction-result" class="mt-4" style="display: none;">
+                            <h6 class="mb-3" style="color: var(--text-secondary);">Predicted Demand:</h6>
+                            <div id="prediction-values" class="d-flex flex-wrap"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-4">
+        <div class="row mb-4 g-4">
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">📊 Demand Prediction Chart</h5>
+                        <span style="font-size: 1.3rem;">📈</span>
+                        <h5>Demand Prediction Chart</h5>
                     </div>
                     <div class="card-body">
                         <canvas id="demandChart"></canvas>
@@ -116,9 +132,10 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="card">
+                <div class="card h-100">
                     <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">📈 Top Products (This Week)</h5>
+                        <span style="font-size: 1.3rem;">🏆</span>
+                        <h5>Top Products (This Week)</h5>
                     </div>
                     <div class="card-body">
                         <ul class="list-group" id="top-products-list">
@@ -129,11 +146,12 @@
             </div>
         </div>
 
-        <div class="row mb-4">
+        <div class="row mb-4 g-4">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-secondary text-white">
-                        <h5 class="mb-0">📦 All Products & Inventory Status</h5>
+                        <span style="font-size: 1.3rem;">📦</span>
+                        <h5>All Products & Inventory Status</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -152,7 +170,7 @@
                                 </thead>
                                 <tbody id="products-table">
                                     <tr>
-                                        <td colspan="8" class="text-center">Loading...</td>
+                                        <td colspan="8" class="text-center py-4">Loading...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -167,6 +185,48 @@
     <script>
         let demandChart = null;
         let allProducts = [];
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            updateTheme();
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        function updateTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeToggle = document.getElementById('themeToggle');
+            
+            if (isDarkMode) {
+                html.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                themeToggle.querySelector('span:last-child').textContent = 'Light Mode';
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '🌙';
+                themeToggle.querySelector('span:last-child').textContent = 'Dark Mode';
+            }
+            
+            if (demandChart) {
+                updateChartTheme();
+            }
+        }
+
+        function updateChartTheme() {
+            if (!demandChart) return;
+            
+            const textColor = isDarkMode ? '#f1f5f9' : '#1a202c';
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            
+            demandChart.options.scales.x.ticks.color = textColor;
+            demandChart.options.scales.y.ticks.color = textColor;
+            demandChart.options.scales.x.grid.color = gridColor;
+            demandChart.options.scales.y.grid.color = gridColor;
+            demandChart.options.plugins.legend.labels.color = textColor;
+            demandChart.options.plugins.title.color = textColor;
+            demandChart.update();
+        }
 
         async function loadDashboardStats() {
             try {
@@ -176,14 +236,19 @@
                 if (data.success) {
                     document.getElementById('total-products').textContent = data.total_products;
                     document.getElementById('low-stock-alerts').textContent = data.low_stock_alerts;
-                    document.getElementById('weekly-sales').textContent = '$' + data.weekly_sales.toFixed(2);
+                    document.getElementById('weekly-sales').textContent = '$' + data.weekly_sales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                     
                     const topProductsList = document.getElementById('top-products-list');
                     topProductsList.innerHTML = '';
-                    data.top_products.forEach(product => {
+                    
+                    const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+                    data.top_products.forEach((product, index) => {
                         const li = document.createElement('li');
                         li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                        li.innerHTML = `${product.product_name} <span class="badge bg-primary rounded-pill">${product.total_sold}</span>`;
+                        li.innerHTML = `
+                            <span>${medals[index] || '📦'} ${product.product_name}</span>
+                            <span class="badge bg-primary rounded-pill">${product.total_sold} sold</span>
+                        `;
                         topProductsList.appendChild(li);
                     });
                 }
@@ -204,20 +269,25 @@
                     
                     data.products.forEach(product => {
                         const row = document.createElement('tr');
-                        const statusClass = product.quantity_available <= product.reorder_point ? 'bg-danger text-white' : 
-                                          product.quantity_available <= product.minimum_stock_level ? 'bg-warning' : '';
-                        const statusText = product.quantity_available <= product.reorder_point ? 'RESTOCK NOW' : 
-                                         product.quantity_available <= product.minimum_stock_level ? 'Low Stock' : 'OK';
+                        let statusBadge = '';
+                        
+                        if (product.quantity_available <= product.reorder_point) {
+                            statusBadge = '<span class="badge bg-danger">RESTOCK NOW</span>';
+                        } else if (product.quantity_available <= product.minimum_stock_level * 1.2) {
+                            statusBadge = '<span class="badge bg-warning">Low Stock</span>';
+                        } else {
+                            statusBadge = '<span class="badge" style="background: var(--gradient-success);">In Stock</span>';
+                        }
                         
                         row.innerHTML = `
-                            <td>${product.product_id}</td>
+                            <td><strong>#${product.product_id}</strong></td>
                             <td>${product.product_name}</td>
-                            <td>${product.category}</td>
-                            <td>$${product.unit_price.toFixed(2)}</td>
+                            <td><span class="text-muted">${product.category}</span></td>
+                            <td><strong>$${product.unit_price.toFixed(2)}</strong></td>
                             <td>${product.quantity_available}</td>
                             <td>${product.minimum_stock_level}</td>
                             <td>${product.reorder_point}</td>
-                            <td><span class="badge ${statusClass}">${statusText}</span></td>
+                            <td>${statusBadge}</td>
                         `;
                         tbody.appendChild(row);
                     });
@@ -227,7 +297,7 @@
                     data.products.forEach(product => {
                         const option = document.createElement('option');
                         option.value = product.product_id;
-                        option.textContent = product.product_name;
+                        option.textContent = `${product.product_name} (${product.category})`;
                         select.appendChild(option);
                     });
                 }
@@ -246,14 +316,21 @@
                     tbody.innerHTML = '';
                     
                     if (data.alerts.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-success">All products are well-stocked!</td></tr>';
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    <div style="font-size: 2rem; margin-bottom: 10px;">✅</div>
+                                    <span class="text-success fw-bold">All products are well-stocked!</span>
+                                </td>
+                            </tr>
+                        `;
                     } else {
                         data.alerts.forEach(alert => {
                             const row = document.createElement('tr');
                             row.className = 'table-danger';
                             row.innerHTML = `
                                 <td><strong>${alert.product_name}</strong></td>
-                                <td>${alert.quantity_available}</td>
+                                <td><span class="badge bg-danger">${alert.quantity_available}</span></td>
                                 <td>${alert.reorder_point}</td>
                                 <td>${alert.supplier_name}</td>
                             `;
@@ -293,25 +370,22 @@
                     const resultDiv = document.getElementById('prediction-result');
                     const valuesDiv = document.getElementById('prediction-values');
                     
-                    let html = '<div class="alert alert-info"><strong>' + data.product_name + '</strong><br>';
-                    html += 'Predicted demand for the next ' + daysAhead + ' days:<br>';
-                    html += '<ul class="mb-0 mt-2">';
+                    let html = '';
                     data.predictions.forEach((pred, idx) => {
-                        html += `<li>Day ${idx + 1}: <strong>${pred} units</strong></li>`;
+                        html += `<div class="prediction-day">Day ${idx + 1}: <strong>${pred} units</strong></div>`;
                     });
-                    html += '</ul></div>';
                     
                     valuesDiv.innerHTML = html;
                     resultDiv.style.display = 'block';
                     
-                    updateDemandChart(data.predictions, daysAhead);
-                    
                     const salesResponse = await fetch(`/api/sales-history/${productId}?days=${daysAhead}`);
                     const salesData = await salesResponse.json();
+                    let actualSales = [];
                     if (salesData.success) {
-                        const actualSales = salesData.sales.reverse().map(s => s.quantity_sold);
-                        updateDemandChart(data.predictions, daysAhead, actualSales);
+                        actualSales = salesData.sales.reverse().map(s => s.quantity_sold);
                     }
+                    
+                    updateDemandChart(data.predictions, daysAhead, actualSales, data.product_name);
                 } else {
                     alert('Error: ' + data.error);
                 }
@@ -321,7 +395,7 @@
             }
         }
 
-        function updateDemandChart(predictions, days, actualSales = null) {
+        function updateDemandChart(predictions, days, actualSales = [], productName = '') {
             const ctx = document.getElementById('demandChart').getContext('2d');
             
             const labels = [];
@@ -329,21 +403,38 @@
                 labels.push('Day ' + i);
             }
             
+            const textColor = isDarkMode ? '#f1f5f9' : '#1a202c';
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            
             const datasets = [{
                 label: 'Predicted Demand',
                 data: predictions,
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                tension: 0.1
+                borderColor: 'rgb(102, 126, 234)',
+                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: 'rgb(102, 126, 234)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
             }];
             
             if (actualSales && actualSales.length > 0) {
                 datasets.push({
                     label: 'Recent Actual Sales',
                     data: actualSales.slice(-days),
-                    borderColor: 'rgb(255, 99, 132)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    tension: 0.1
+                    borderColor: 'rgb(56, 239, 125)',
+                    backgroundColor: 'rgba(56, 239, 125, 0.2)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: 'rgb(56, 239, 125)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 });
             }
             
@@ -359,13 +450,53 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: true,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
                     plugins: {
                         legend: {
                             position: 'top',
+                            labels: {
+                                color: textColor,
+                                font: {
+                                    family: 'Inter',
+                                    weight: '600'
+                                },
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
                         },
                         title: {
                             display: true,
-                            text: 'Demand Forecast'
+                            text: productName ? `Demand Forecast: ${productName}` : 'Demand Forecast',
+                            color: textColor,
+                            font: {
+                                family: 'Inter',
+                                size: 16,
+                                weight: '700'
+                            },
+                            padding: {
+                                bottom: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                            titleColor: textColor,
+                            bodyColor: textColor,
+                            borderColor: isDarkMode ? '#334155' : '#e2e8f0',
+                            borderWidth: 1,
+                            cornerRadius: 10,
+                            padding: 12,
+                            titleFont: {
+                                family: 'Inter',
+                                weight: '700'
+                            },
+                            bodyFont: {
+                                family: 'Inter'
+                            }
                         }
                     },
                     scales: {
@@ -373,7 +504,32 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Units'
+                                text: 'Units',
+                                color: textColor,
+                                font: {
+                                    family: 'Inter',
+                                    weight: '600'
+                                }
+                            },
+                            ticks: {
+                                color: textColor,
+                                font: {
+                                    family: 'Inter'
+                                }
+                            },
+                            grid: {
+                                color: gridColor
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: textColor,
+                                font: {
+                                    family: 'Inter'
+                                }
+                            },
+                            grid: {
+                                color: gridColor
                             }
                         }
                     }
@@ -382,6 +538,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            updateTheme();
             loadDashboardStats();
             loadProducts();
             loadRestockAlerts();
