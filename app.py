@@ -258,6 +258,46 @@ def add_sale():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/add-purchase', methods=['POST'])
+def add_purchase():
+    try:
+        data = request.get_json()
+        product_id = data.get('product_id')
+        quantity_purchased = data.get('quantity_purchased')
+        
+        if not product_id or not quantity_purchased:
+            return jsonify({'success': False, 'error': 'product_id and quantity_purchased are required'}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT ProductID FROM Products WHERE ProductID = ?', (product_id,))
+        if not cursor.fetchone():
+            conn.close()
+            return jsonify({'success': False, 'error': 'Product not found'}), 404
+        
+        cursor.execute(
+            'UPDATE Inventory SET QuantityAvailable = QuantityAvailable + ?, LastUpdated = ? WHERE ProductID = ?',
+            (quantity_purchased, datetime.now(), product_id)
+        )
+        
+        cursor.execute('SELECT QuantityAvailable FROM Inventory WHERE ProductID = ?', (product_id,))
+        new_quantity = cursor.fetchone()['QuantityAvailable']
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Stock updated successfully',
+            'product_id': product_id,
+            'quantity_added': quantity_purchased,
+            'new_quantity': new_quantity
+        })
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/suppliers', methods=['GET'])
 def get_suppliers():
     try:

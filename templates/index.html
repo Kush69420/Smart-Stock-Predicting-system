@@ -80,12 +80,37 @@
         </div>
     </div>
 
+    <div class="modal fade" id="recordPurchaseModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">📦 Update Stock (Purchase)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <select class="form-select mb-3" id="purchaseProductSelect">
+                        <option value="">Select Product</option>
+                    </select>
+                    <input type="number" class="form-control mb-3" id="purchaseQuantity" placeholder="Quantity Purchased" min="1">
+                    <div class="mb-3">
+                        <label>Cost: <span id="purchaseCost">₹0.00</span></label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="recordPurchase()">Update Stock</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container-fluid main-content">
         <div class="header-section">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>📊 Dashboard</h1>
                 <div class="btn-group">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recordSaleModal">💳 Record Sale</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recordPurchaseModal">📦 Update Stock</button>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">➕ Add Product</button>
                 </div>
             </div>
@@ -256,6 +281,8 @@
                     select.innerHTML = '<option value="">Select Product</option>' + data.products.map(p => `<option value="${p.product_id}">${p.product_name}</option>`).join('');
                     const saleSelect = document.getElementById('saleProductSelect');
                     if (saleSelect) saleSelect.innerHTML = '<option value="">Select Product</option>' + data.products.map(p => `<option value="${p.product_id}">${p.product_name} (₹${p.unit_price.toFixed(2)})</option>`).join('');
+                    const purchaseSelect = document.getElementById('purchaseProductSelect');
+                    if (purchaseSelect) purchaseSelect.innerHTML = '<option value="">Select Product</option>' + data.products.map(p => `<option value="${p.product_id}">${p.product_name} (₹${p.unit_price.toFixed(2)})</option>`).join('');
                 }
             } catch (e) { console.error(e); }
         }
@@ -308,6 +335,42 @@
             } else {
                 document.getElementById('saleAmount').textContent = '₹0.00';
             }
+        }
+
+        function updatePurchaseCost() {
+            const productId = document.getElementById('purchaseProductSelect').value;
+            const quantity = parseInt(document.getElementById('purchaseQuantity').value) || 0;
+            if (productId) {
+                const product = allProducts.find(p => p.product_id === parseInt(productId));
+                if (product) {
+                    const cost = product.unit_price * quantity;
+                    document.getElementById('purchaseCost').textContent = '₹' + cost.toFixed(2);
+                }
+            } else {
+                document.getElementById('purchaseCost').textContent = '₹0.00';
+            }
+        }
+
+        async function recordPurchase() {
+            const productId = document.getElementById('purchaseProductSelect').value;
+            const quantity = parseInt(document.getElementById('purchaseQuantity').value);
+            if (!productId || !quantity || quantity <= 0) { alert('Select product and enter quantity'); return; }
+            try {
+                const res = await fetch('/api/add-purchase', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({product_id: parseInt(productId), quantity_purchased: quantity})
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`✅ Stock updated! Added ${quantity} units. New Stock: ${data.new_quantity}`);
+                    bootstrap.Modal.getInstance(document.getElementById('recordPurchaseModal')).hide();
+                    document.getElementById('purchaseProductSelect').value = '';
+                    document.getElementById('purchaseQuantity').value = '';
+                    document.getElementById('purchaseCost').textContent = '₹0.00';
+                    loadDashboardStats(); loadProducts(); loadRestockAlerts();
+                } else alert('Error: ' + data.error);
+            } catch (e) { console.error(e); }
         }
 
         async function recordSale() {
@@ -422,6 +485,8 @@
             loadDashboardStats(); loadProducts(); loadRestockAlerts(); loadSuppliers(); loadRecentSales();
             document.getElementById('saleProductSelect').addEventListener('change', updateSaleAmount);
             document.getElementById('saleQuantity').addEventListener('input', updateSaleAmount);
+            document.getElementById('purchaseProductSelect').addEventListener('change', updatePurchaseCost);
+            document.getElementById('purchaseQuantity').addEventListener('input', updatePurchaseCost);
             setInterval(() => { loadDashboardStats(); loadRestockAlerts(); loadRecentSales(); }, 60000);
         });
     </script>
