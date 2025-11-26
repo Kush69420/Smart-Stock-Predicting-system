@@ -41,7 +41,7 @@ def create_features(df):
     
     for product_id in df['ProductID'].unique():
         product_df = df[df['ProductID'] == product_id].copy()
-        product_df = product_df.sort_values('SaleDate')
+        product_df = product_df.sort_values(by='SaleDate')
         
         product_df['Sales_Lag_7'] = product_df['QuantitySold'].shift(7)
         product_df['Sales_Lag_14'] = product_df['QuantitySold'].shift(14)
@@ -54,12 +54,12 @@ def create_features(df):
     
     df_with_features = pd.concat(product_dfs, ignore_index=True)
     
-    df_with_features = df_with_features.fillna(method='bfill').fillna(0)
+    df_with_features = df_with_features.bfill().fillna(0)
     
     return df_with_features
 
 def prepare_train_test_split(df, test_size=0.25):
-    df = df.sort_values('SaleDate')
+    df = df.sort_values(by='SaleDate')
     
     split_index = int(len(df) * (1 - test_size))
     
