@@ -20,64 +20,35 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">
-                <span class="brand-icon">📦</span>
-                <span>Smart Inventory</span>
-            </a>
-            <div class="d-flex align-items-center gap-3">
-                <span class="navbar-text d-none d-md-block">
-                    ML-Powered Predictive Restocking
-                </span>
-                <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
-                    <span id="themeIcon">🌙</span>
-                    <span>Dark Mode</span>
-                </button>
-            </div>
+            <a class="navbar-brand" href="/">📦 Smart Inventory</a>
+            <span class="navbar-text">ML-Powered Predictive Restocking</span>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span>
+            </button>
         </div>
     </nav>
 
     <div class="modal fade" id="addProductModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header" style="background: var(--gradient-primary); border: none;">
-                    <h5 class="modal-title text-white" style="font-weight: 700;">➕ Add New Product</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <div class="modal-header">
+                    <h5 class="modal-title">➕ Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="newProductName" class="form-label">Product Name</label>
-                        <input type="text" class="form-control" id="newProductName" placeholder="e.g., Wireless Mouse">
-                    </div>
-                    <div class="mb-3">
-                        <label for="newProductCategory" class="form-label">Category</label>
-                        <input type="text" class="form-control" id="newProductCategory" placeholder="e.g., Electronics">
-                    </div>
-                    <div class="mb-3">
-                        <label for="newProductPrice" class="form-label">Unit Price ($)</label>
-                        <input type="number" class="form-control" id="newProductPrice" placeholder="0.00" step="0.01" min="0">
-                    </div>
-                    <div class="mb-3">
-                        <label for="newProductSupplier" class="form-label">Supplier</label>
-                        <select class="form-select" id="newProductSupplier">
-                            <option value="">-- Select Supplier --</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="newProductQuantity" class="form-label">Initial Stock Quantity</label>
-                        <input type="number" class="form-control" id="newProductQuantity" placeholder="100" value="100" min="0">
-                    </div>
+                    <input type="text" class="form-control mb-3" id="newProductName" placeholder="Product Name">
+                    <input type="text" class="form-control mb-3" id="newProductCategory" placeholder="Category">
+                    <input type="number" class="form-control mb-3" id="newProductPrice" placeholder="Price" step="0.01">
+                    <select class="form-select mb-3" id="newProductSupplier">
+                        <option value="">Select Supplier</option>
+                    </select>
+                    <input type="number" class="form-control mb-3" id="newProductQuantity" placeholder="Initial Stock" value="100">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="newProductMinStock" class="form-label">Min Stock Level</label>
-                            <input type="number" class="form-control" id="newProductMinStock" placeholder="50" value="50" min="0">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="newProductReorder" class="form-label">Reorder Point</label>
-                            <input type="number" class="form-control" id="newProductReorder" placeholder="75" value="75" min="0">
-                        </div>
+                        <div class="col-6"><input type="number" class="form-control" id="newProductMinStock" placeholder="Min Stock" value="50"></div>
+                        <div class="col-6"><input type="number" class="form-control" id="newProductReorder" placeholder="Reorder Point" value="75"></div>
                     </div>
                 </div>
-                <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" onclick="saveNewProduct()">Add Product</button>
                 </div>
@@ -85,163 +56,99 @@
         </div>
     </div>
 
-    <div class="container-fluid mt-4 px-4">
-        <div class="row mb-4 g-4">
-            <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-                <h4 style="margin: 0; color: var(--text-primary);">📊 Inventory Dashboard</h4>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
-                    <span style="margin-right: 8px;">➕</span> Add Product
-                </button>
-            </div>
-        </div>
-        <div class="row mb-4 g-4">
-            <div class="col-md-4">
-                <div class="card summary-card bg-primary text-white glow-effect">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Products</h5>
-                        <h2 class="card-text" id="total-products">-</h2>
-                        <span class="stats-icon">📊</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card summary-card bg-danger text-white glow-effect">
-                    <div class="card-body">
-                        <h5 class="card-title">Low Stock Alerts</h5>
-                        <h2 class="card-text" id="low-stock-alerts">-</h2>
-                        <span class="stats-icon">⚠️</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card summary-card bg-success text-white glow-effect">
-                    <div class="card-body">
-                        <h5 class="card-title">Sales (This Week)</h5>
-                        <h2 class="card-text" id="weekly-sales">-</h2>
-                        <span class="stats-icon">💰</span>
-                    </div>
-                </div>
+    <div class="container-fluid main-content">
+        <div class="header-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>📊 Dashboard</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">➕ Add Product</button>
             </div>
         </div>
 
-        <div class="row mb-4 g-4">
-            <div class="col-lg-6">
-                <div class="card h-100">
-                    <div class="card-header bg-danger text-white">
-                        <span style="font-size: 1.3rem;">🚨</span>
-                        <h5>Restock Alerts</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Product Name</th>
-                                        <th>Current Stock</th>
-                                        <th>Reorder Point</th>
-                                        <th>Supplier</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="restock-alerts-table">
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4">Loading...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="total-products">-</div>
+                <div class="stat-label">Total Products</div>
+                <div class="stat-icon">📦</div>
+            </div>
+            <div class="stat-card alert">
+                <div class="stat-value" id="low-stock-alerts">-</div>
+                <div class="stat-label">Low Stock Alerts</div>
+                <div class="stat-icon">⚠️</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-value" id="weekly-sales">-</div>
+                <div class="stat-label">Weekly Sales</div>
+                <div class="stat-icon">💰</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="card-section">
+                <div class="section-header">🚨 Restock Alerts</div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Stock</th>
+                                <th>Reorder</th>
+                                <th>Supplier</th>
+                            </tr>
+                        </thead>
+                        <tbody id="restock-alerts-table">
+                            <tr><td colspan="4" class="text-center">Loading...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="col-lg-6">
-                <div class="card h-100">
-                    <div class="card-header bg-info text-white">
-                        <span style="font-size: 1.3rem;">🔮</span>
-                        <h5>Demand Prediction</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label for="product-select" class="form-label">Select Product</label>
-                            <select class="form-select" id="product-select">
-                                <option value="">Loading products...</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="days-ahead" class="form-label">Days Ahead</label>
-                            <input type="number" class="form-control" id="days-ahead" value="7" min="1" max="30">
-                        </div>
-                        <button class="btn btn-primary w-100" onclick="predictDemand()">
-                            <span style="margin-right: 8px;">🎯</span> Predict Demand
-                        </button>
-                        
-                        <div id="prediction-result" class="mt-4" style="display: none;">
-                            <h6 class="mb-3" style="color: var(--text-secondary);">Predicted Demand:</h6>
-                            <div id="prediction-values" class="d-flex flex-wrap"></div>
-                        </div>
-                    </div>
+            <div class="card-section">
+                <div class="section-header">🔮 Demand Prediction</div>
+                <select class="form-select mb-2" id="product-select">
+                    <option value="">Select Product</option>
+                </select>
+                <input type="number" class="form-control mb-3" id="days-ahead" value="7" min="1" max="30">
+                <button class="btn btn-primary w-100" onclick="predictDemand()">Predict</button>
+                <div id="prediction-result" style="display: none; margin-top: 15px;">
+                    <div id="prediction-values"></div>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-4 g-4">
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <span style="font-size: 1.3rem;">📈</span>
-                        <h5>Demand Prediction Chart</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="demandChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card h-100">
-                    <div class="card-header bg-success text-white">
-                        <span style="font-size: 1.3rem;">🏆</span>
-                        <h5>Top Products (This Week)</h5>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group" id="top-products-list">
-                            <li class="list-group-item">Loading...</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+        <div class="card-section full-width">
+            <div class="section-header">📈 Prediction Chart</div>
+            <canvas id="demandChart"></canvas>
         </div>
 
-        <div class="row mb-4 g-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-secondary text-white">
-                        <span style="font-size: 1.3rem;">📦</span>
-                        <h5>All Products & Inventory Status</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Product Name</th>
-                                        <th>Category</th>
-                                        <th>Price</th>
-                                        <th>Stock</th>
-                                        <th>Min Stock</th>
-                                        <th>Reorder Point</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="products-table">
-                                    <tr>
-                                        <td colspan="8" class="text-center py-4">Loading...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+        <div class="content-grid">
+            <div class="card-section full-width">
+                <div class="section-header">📦 All Products</div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Min</th>
+                                <th>Reorder</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table">
+                            <tr><td colspan="8" class="text-center">Loading...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
+
+            <div class="card-section">
+                <div class="section-header">🏆 Top Products</div>
+                <ul class="top-list" id="top-products-list">
+                    <li>Loading...</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -249,449 +156,170 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let demandChart = null;
-        let allProducts = [];
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
 
         function toggleTheme() {
             isDarkMode = !isDarkMode;
-            updateTheme();
+            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+            document.getElementById('themeIcon').textContent = isDarkMode ? '☀️' : '🌙';
             localStorage.setItem('darkMode', isDarkMode);
-        }
-
-        function updateTheme() {
-            const html = document.documentElement;
-            const themeIcon = document.getElementById('themeIcon');
-            const themeToggle = document.getElementById('themeToggle');
-            
-            if (isDarkMode) {
-                html.setAttribute('data-theme', 'dark');
-                themeIcon.textContent = '☀️';
-                themeToggle.querySelector('span:last-child').textContent = 'Light Mode';
-            } else {
-                html.setAttribute('data-theme', 'light');
-                themeIcon.textContent = '🌙';
-                themeToggle.querySelector('span:last-child').textContent = 'Dark Mode';
-            }
-            
-            if (demandChart) {
-                updateChartTheme();
-            }
+            if (demandChart) updateChartTheme();
         }
 
         function updateChartTheme() {
             if (!demandChart) return;
-            
-            const textColor = isDarkMode ? '#f1f5f9' : '#1a202c';
-            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            
+            const textColor = isDarkMode ? '#ffffff' : '#1a202c';
+            const gridColor = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
             demandChart.options.scales.x.ticks.color = textColor;
             demandChart.options.scales.y.ticks.color = textColor;
             demandChart.options.scales.x.grid.color = gridColor;
             demandChart.options.scales.y.grid.color = gridColor;
             demandChart.options.plugins.legend.labels.color = textColor;
-            demandChart.options.plugins.title.color = textColor;
             demandChart.update();
         }
 
         async function loadDashboardStats() {
             try {
-                const response = await fetch('/api/dashboard-stats');
-                const data = await response.json();
-                
+                const res = await fetch('/api/dashboard-stats');
+                const data = await res.json();
                 if (data.success) {
                     document.getElementById('total-products').textContent = data.total_products;
                     document.getElementById('low-stock-alerts').textContent = data.low_stock_alerts;
-                    document.getElementById('weekly-sales').textContent = '$' + data.weekly_sales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    
-                    const topProductsList = document.getElementById('top-products-list');
-                    topProductsList.innerHTML = '';
-                    
+                    document.getElementById('weekly-sales').textContent = '$' + data.weekly_sales.toLocaleString('en-US', {minimumFractionDigits: 2});
                     const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
-                    data.top_products.forEach((product, index) => {
-                        const li = document.createElement('li');
-                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                        li.innerHTML = `
-                            <span>${medals[index] || '📦'} ${product.product_name}</span>
-                            <span class="badge bg-primary rounded-pill">${product.total_sold} sold</span>
-                        `;
-                        topProductsList.appendChild(li);
-                    });
+                    const list = document.getElementById('top-products-list');
+                    list.innerHTML = data.top_products.map((p, i) => `<li>${medals[i] || '📦'} ${p.product_name} (${p.total_sold})</li>`).join('');
                 }
-            } catch (error) {
-                console.error('Error loading dashboard stats:', error);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function loadProducts() {
             try {
-                const response = await fetch('/api/products');
-                const data = await response.json();
-                
+                const res = await fetch('/api/products');
+                const data = await res.json();
                 if (data.success) {
-                    allProducts = data.products;
                     const tbody = document.getElementById('products-table');
-                    tbody.innerHTML = '';
-                    
-                    data.products.forEach(product => {
-                        const row = document.createElement('tr');
-                        let statusBadge = '';
-                        
-                        if (product.quantity_available <= product.reorder_point) {
-                            statusBadge = '<span class="badge bg-danger">RESTOCK NOW</span>';
-                        } else if (product.quantity_available <= product.minimum_stock_level * 1.2) {
-                            statusBadge = '<span class="badge bg-warning">Low Stock</span>';
-                        } else {
-                            statusBadge = '<span class="badge" style="background: var(--gradient-success);">In Stock</span>';
-                        }
-                        
-                        row.innerHTML = `
-                            <td><strong>#${product.product_id}</strong></td>
-                            <td>${product.product_name}</td>
-                            <td><span class="text-muted">${product.category}</span></td>
-                            <td><strong>$${product.unit_price.toFixed(2)}</strong></td>
-                            <td>${product.quantity_available}</td>
-                            <td>${product.minimum_stock_level}</td>
-                            <td>${product.reorder_point}</td>
-                            <td>${statusBadge}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                    
+                    tbody.innerHTML = data.products.map(p => {
+                        const status = p.quantity_available <= p.reorder_point ? 'RESTOCK' : p.quantity_available <= p.minimum_stock_level * 1.2 ? 'Low' : 'OK';
+                        return `<tr><td>#${p.product_id}</td><td>${p.product_name}</td><td>${p.category}</td><td>$${p.unit_price.toFixed(2)}</td><td>${p.quantity_available}</td><td>${p.minimum_stock_level}</td><td>${p.reorder_point}</td><td><span class="badge">${status}</span></td></tr>`;
+                    }).join('');
                     const select = document.getElementById('product-select');
-                    select.innerHTML = '<option value="">-- Select a product --</option>';
-                    data.products.forEach(product => {
-                        const option = document.createElement('option');
-                        option.value = product.product_id;
-                        option.textContent = `${product.product_name} (${product.category})`;
-                        select.appendChild(option);
-                    });
+                    select.innerHTML = '<option value="">Select Product</option>' + data.products.map(p => `<option value="${p.product_id}">${p.product_name}</option>`).join('');
                 }
-            } catch (error) {
-                console.error('Error loading products:', error);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function loadRestockAlerts() {
             try {
-                const response = await fetch('/api/restock-alerts');
-                const data = await response.json();
-                
+                const res = await fetch('/api/restock-alerts');
+                const data = await res.json();
+                const tbody = document.getElementById('restock-alerts-table');
                 if (data.success) {
-                    const tbody = document.getElementById('restock-alerts-table');
-                    tbody.innerHTML = '';
-                    
-                    if (data.alerts.length === 0) {
-                        tbody.innerHTML = `
-                            <tr>
-                                <td colspan="4" class="text-center py-4">
-                                    <div style="font-size: 2rem; margin-bottom: 10px;">✅</div>
-                                    <span class="text-success fw-bold">All products are well-stocked!</span>
-                                </td>
-                            </tr>
-                        `;
-                    } else {
-                        data.alerts.forEach(alert => {
-                            const row = document.createElement('tr');
-                            row.className = 'table-danger';
-                            row.innerHTML = `
-                                <td><strong>${alert.product_name}</strong></td>
-                                <td><span class="badge bg-danger">${alert.quantity_available}</span></td>
-                                <td>${alert.reorder_point}</td>
-                                <td>${alert.supplier_name}</td>
-                            `;
-                            tbody.appendChild(row);
-                        });
-                    }
+                    tbody.innerHTML = data.alerts.length === 0 ? '<tr><td colspan="4" class="text-center">✅ All products well-stocked!</td></tr>' : data.alerts.map(a => `<tr><td>${a.product_name}</td><td>${a.quantity_available}</td><td>${a.reorder_point}</td><td>${a.supplier_name}</td></tr>`).join('');
                 }
-            } catch (error) {
-                console.error('Error loading restock alerts:', error);
-            }
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadSuppliers() {
+            try {
+                const res = await fetch('/api/suppliers');
+                const data = await res.json();
+                if (data.success) {
+                    const select = document.getElementById('newProductSupplier');
+                    select.innerHTML = '<option value="">Select Supplier</option>' + data.suppliers.map(s => `<option value="${s.supplier_id}">${s.supplier_name}</option>`).join('');
+                }
+            } catch (e) { console.error(e); }
         }
 
         async function predictDemand() {
             const productId = document.getElementById('product-select').value;
             const daysAhead = parseInt(document.getElementById('days-ahead').value);
-            
-            if (!productId) {
-                alert('Please select a product');
-                return;
-            }
-            
+            if (!productId) { alert('Select a product'); return; }
             try {
-                const response = await fetch('/api/predict-demand', {
+                const res = await fetch('/api/predict-demand', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        product_id: parseInt(productId),
-                        days_ahead: daysAhead
-                    })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({product_id: parseInt(productId), days_ahead: daysAhead})
                 });
-                
-                const data = await response.json();
-                
+                const data = await res.json();
                 if (data.success) {
-                    const resultDiv = document.getElementById('prediction-result');
-                    const valuesDiv = document.getElementById('prediction-values');
-                    
-                    let html = '';
-                    data.predictions.forEach((pred, idx) => {
-                        html += `<div class="prediction-day">Day ${idx + 1}: <strong>${pred} units</strong></div>`;
-                    });
-                    
-                    valuesDiv.innerHTML = html;
-                    resultDiv.style.display = 'block';
-                    
-                    const salesResponse = await fetch(`/api/sales-history/${productId}?days=${daysAhead}`);
-                    const salesData = await salesResponse.json();
-                    let actualSales = [];
-                    if (salesData.success) {
-                        actualSales = salesData.sales.reverse().map(s => s.quantity_sold);
-                    }
-                    
-                    updateDemandChart(data.predictions, daysAhead, actualSales, data.product_name);
-                } else {
-                    alert('Error: ' + data.error);
+                    document.getElementById('prediction-values').innerHTML = data.predictions.map((p, i) => `<div class="pred-day">Day ${i+1}: <strong>${p}</strong></div>`).join('');
+                    document.getElementById('prediction-result').style.display = 'block';
+                    updateDemandChart(data.predictions, daysAhead, data.product_name);
                 }
-            } catch (error) {
-                console.error('Error predicting demand:', error);
-                alert('Error predicting demand');
-            }
+            } catch (e) { console.error(e); }
         }
 
-        function updateDemandChart(predictions, days, actualSales = [], productName = '') {
+        function updateDemandChart(predictions, days, productName) {
             const ctx = document.getElementById('demandChart').getContext('2d');
+            const labels = Array.from({length: days}, (_, i) => `Day ${i+1}`);
+            const textColor = isDarkMode ? '#ffffff' : '#1a202c';
+            const gridColor = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
             
-            const labels = [];
-            for (let i = 1; i <= days; i++) {
-                labels.push('Day ' + i);
-            }
-            
-            const textColor = isDarkMode ? '#f1f5f9' : '#1a202c';
-            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            
-            const datasets = [{
-                label: 'Predicted Demand',
-                data: predictions,
-                borderColor: 'rgb(102, 126, 234)',
-                backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: 'rgb(102, 126, 234)',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 5,
-                pointHoverRadius: 7
-            }];
-            
-            if (actualSales && actualSales.length > 0) {
-                datasets.push({
-                    label: 'Recent Actual Sales',
-                    data: actualSales.slice(-days),
-                    borderColor: 'rgb(56, 239, 125)',
-                    backgroundColor: 'rgba(56, 239, 125, 0.2)',
-                    borderWidth: 3,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: 'rgb(56, 239, 125)',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
-                });
-            }
-            
-            if (demandChart) {
-                demandChart.destroy();
-            }
-            
+            if (demandChart) demandChart.destroy();
             demandChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
-                    datasets: datasets
+                    labels, datasets: [{
+                        label: 'Predicted Demand',
+                        data: predictions,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102,126,234,0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointRadius: 5
+                    }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
                     plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                color: textColor,
-                                font: {
-                                    family: 'Inter',
-                                    weight: '600'
-                                },
-                                padding: 20,
-                                usePointStyle: true,
-                                pointStyle: 'circle'
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: productName ? `Demand Forecast: ${productName}` : 'Demand Forecast',
-                            color: textColor,
-                            font: {
-                                family: 'Inter',
-                                size: 16,
-                                weight: '700'
-                            },
-                            padding: {
-                                bottom: 20
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                            titleColor: textColor,
-                            bodyColor: textColor,
-                            borderColor: isDarkMode ? '#334155' : '#e2e8f0',
-                            borderWidth: 1,
-                            cornerRadius: 10,
-                            padding: 12,
-                            titleFont: {
-                                family: 'Inter',
-                                weight: '700'
-                            },
-                            bodyFont: {
-                                family: 'Inter'
-                            }
-                        }
+                        legend: { labels: { color: textColor, font: { family: 'Inter', weight: '600' } } },
+                        title: { display: true, text: `Forecast: ${productName}`, color: textColor }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Units',
-                                color: textColor,
-                                font: {
-                                    family: 'Inter',
-                                    weight: '600'
-                                }
-                            },
-                            ticks: {
-                                color: textColor,
-                                font: {
-                                    family: 'Inter'
-                                }
-                            },
-                            grid: {
-                                color: gridColor
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: textColor,
-                                font: {
-                                    family: 'Inter'
-                                }
-                            },
-                            grid: {
-                                color: gridColor
-                            }
-                        }
+                        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+                        y: { beginAtZero: true, ticks: { color: textColor }, grid: { color: gridColor } }
                     }
                 }
             });
         }
 
-        async function loadSuppliers() {
-            try {
-                const response = await fetch('/api/suppliers');
-                const data = await response.json();
-                
-                if (data.success) {
-                    const select = document.getElementById('newProductSupplier');
-                    select.innerHTML = '<option value="">-- Select Supplier --</option>';
-                    data.suppliers.forEach(supplier => {
-                        const option = document.createElement('option');
-                        option.value = supplier.supplier_id;
-                        option.textContent = supplier.supplier_name;
-                        select.appendChild(option);
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading suppliers:', error);
-            }
-        }
-
         async function saveNewProduct() {
-            const productName = document.getElementById('newProductName').value.trim();
+            const name = document.getElementById('newProductName').value.trim();
             const category = document.getElementById('newProductCategory').value.trim();
-            const unitPrice = document.getElementById('newProductPrice').value;
-            const supplierId = document.getElementById('newProductSupplier').value;
-            const initialQuantity = document.getElementById('newProductQuantity').value;
-            const minStock = document.getElementById('newProductMinStock').value;
-            const reorderPoint = document.getElementById('newProductReorder').value;
-
-            if (!productName || !category || !unitPrice || !supplierId) {
-                alert('Please fill in all required fields');
-                return;
-            }
-
+            const price = document.getElementById('newProductPrice').value;
+            const supplier = document.getElementById('newProductSupplier').value;
+            if (!name || !category || !price || !supplier) { alert('Fill all fields'); return; }
             try {
-                const response = await fetch('/api/add-product', {
+                const res = await fetch('/api/add-product', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        product_name: productName,
-                        category: category,
-                        unit_price: parseFloat(unitPrice),
-                        supplier_id: parseInt(supplierId),
-                        initial_quantity: parseInt(initialQuantity),
-                        min_stock_level: parseInt(minStock),
-                        reorder_point: parseInt(reorderPoint)
+                        product_name: name, category, unit_price: parseFloat(price),
+                        supplier_id: parseInt(supplier),
+                        initial_quantity: parseInt(document.getElementById('newProductQuantity').value),
+                        min_stock_level: parseInt(document.getElementById('newProductMinStock').value),
+                        reorder_point: parseInt(document.getElementById('newProductReorder').value)
                     })
                 });
-
-                const data = await response.json();
-
+                const data = await res.json();
                 if (data.success) {
-                    alert(`✅ Product "${data.product_name}" added successfully!`);
-                    
-                    document.getElementById('newProductName').value = '';
-                    document.getElementById('newProductCategory').value = '';
-                    document.getElementById('newProductPrice').value = '';
-                    document.getElementById('newProductSupplier').value = '';
-                    document.getElementById('newProductQuantity').value = '100';
-                    document.getElementById('newProductMinStock').value = '50';
-                    document.getElementById('newProductReorder').value = '75';
-                    
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
-                    modal.hide();
-                    
-                    loadDashboardStats();
-                    loadProducts();
-                    loadRestockAlerts();
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            } catch (error) {
-                console.error('Error adding product:', error);
-                alert('Error adding product');
-            }
+                    alert('✅ Product added!');
+                    bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
+                    loadDashboardStats(); loadProducts(); loadRestockAlerts();
+                    ['newProductName', 'newProductCategory', 'newProductPrice', 'newProductSupplier', 'newProductQuantity', 'newProductMinStock', 'newProductReorder'].forEach(id => {
+                        const el = document.getElementById(id);
+                        el.value = id === 'newProductQuantity' ? '100' : id === 'newProductMinStock' ? '50' : id === 'newProductReorder' ? '75' : '';
+                    });
+                } else alert('Error: ' + data.error);
+            } catch (e) { console.error(e); }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            updateTheme();
-            loadDashboardStats();
-            loadProducts();
-            loadRestockAlerts();
-            loadSuppliers();
-            
-            setInterval(() => {
-                loadDashboardStats();
-                loadRestockAlerts();
-            }, 60000);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardStats(); loadProducts(); loadRestockAlerts(); loadSuppliers();
+            setInterval(() => { loadDashboardStats(); loadRestockAlerts(); }, 60000);
         });
     </script>
 </body>
