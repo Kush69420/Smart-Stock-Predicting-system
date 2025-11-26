@@ -69,7 +69,7 @@
                     </select>
                     <input type="number" class="form-control mb-3" id="saleQuantity" placeholder="Quantity Sold" min="1">
                     <div class="mb-3">
-                        <label>Amount: <span id="saleAmount">$0.00</span></label>
+                        <label>Amount: <span id="saleAmount">₹0.00</span></label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -233,7 +233,7 @@
                 if (data.success) {
                     document.getElementById('total-products').textContent = data.total_products;
                     document.getElementById('low-stock-alerts').textContent = data.low_stock_alerts;
-                    document.getElementById('weekly-sales').textContent = '$' + data.weekly_sales.toLocaleString('en-US', {minimumFractionDigits: 2});
+                    document.getElementById('weekly-sales').textContent = '₹' + data.weekly_sales.toLocaleString('en-US', {minimumFractionDigits: 2});
                     const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
                     const list = document.getElementById('top-products-list');
                     list.innerHTML = data.top_products.map((p, i) => `<li>${medals[i] || '📦'} ${p.product_name} (${p.total_sold})</li>`).join('');
@@ -250,12 +250,12 @@
                     const tbody = document.getElementById('products-table');
                     tbody.innerHTML = data.products.map(p => {
                         const status = p.quantity_available <= p.reorder_point ? 'RESTOCK' : p.quantity_available <= p.minimum_stock_level * 1.2 ? 'Low' : 'OK';
-                        return `<tr><td>#${p.product_id}</td><td>${p.product_name}</td><td>${p.category}</td><td>$${p.unit_price.toFixed(2)}</td><td>${p.quantity_available}</td><td>${p.minimum_stock_level}</td><td>${p.reorder_point}</td><td><span class="badge">${status}</span></td></tr>`;
+                        return `<tr><td>#${p.product_id}</td><td>${p.product_name}</td><td>${p.category}</td><td>₹${p.unit_price.toFixed(2)}</td><td>${p.quantity_available}</td><td>${p.minimum_stock_level}</td><td>${p.reorder_point}</td><td><span class="badge">${status}</span></td></tr>`;
                     }).join('');
                     const select = document.getElementById('product-select');
                     select.innerHTML = '<option value="">Select Product</option>' + data.products.map(p => `<option value="${p.product_id}">${p.product_name}</option>`).join('');
                     const saleSelect = document.getElementById('saleProductSelect');
-                    if (saleSelect) saleSelect.innerHTML = '<option value="">Select Product</option>' + data.products.map(p => `<option value="${p.product_id}">${p.product_name} ($${p.unit_price.toFixed(2)})</option>`).join('');
+                    if (saleSelect) saleSelect.innerHTML = '<option value="">Select Product</option>' + data.products.map(p => `<option value="${p.product_id}">${p.product_name} (₹${p.unit_price.toFixed(2)})</option>`).join('');
                 }
             } catch (e) { console.error(e); }
         }
@@ -290,7 +290,7 @@
                     const tbody = document.getElementById('sales-history-table');
                     tbody.innerHTML = data.sales.length === 0 ? '<tr><td colspan="5" class="text-center">No sales recorded yet</td></tr>' : data.sales.map(s => {
                         const date = new Date(s.sale_date).toLocaleDateString();
-                        return `<tr><td>${date}</td><td>${s.product_name}</td><td>${s.quantity_sold}</td><td>$${(s.total_amount / s.quantity_sold).toFixed(2)}</td><td>$${s.total_amount.toFixed(2)}</td></tr>`;
+                        return `<tr><td>${date}</td><td>${s.product_name}</td><td>${s.quantity_sold}</td><td>₹${(s.total_amount / s.quantity_sold).toFixed(2)}</td><td>₹${s.total_amount.toFixed(2)}</td></tr>`;
                     }).join('');
                 }
             } catch (e) { console.error(e); }
@@ -303,10 +303,10 @@
                 const product = allProducts.find(p => p.product_id === parseInt(productId));
                 if (product) {
                     const amount = product.unit_price * quantity;
-                    document.getElementById('saleAmount').textContent = '$' + amount.toFixed(2);
+                    document.getElementById('saleAmount').textContent = '₹' + amount.toFixed(2);
                 }
             } else {
-                document.getElementById('saleAmount').textContent = '$0.00';
+                document.getElementById('saleAmount').textContent = '₹0.00';
             }
         }
 
@@ -322,11 +322,11 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert(`✅ Sale recorded! Amount: $${data.total_amount.toFixed(2)}`);
+                    alert(`✅ Sale recorded! Amount: ₹${data.total_amount.toFixed(2)}`);
                     bootstrap.Modal.getInstance(document.getElementById('recordSaleModal')).hide();
                     document.getElementById('saleProductSelect').value = '';
                     document.getElementById('saleQuantity').value = '';
-                    document.getElementById('saleAmount').textContent = '$0.00';
+                    document.getElementById('saleAmount').textContent = '₹0.00';
                     loadDashboardStats(); loadProducts(); loadRestockAlerts(); loadRecentSales();
                 } else alert('Error: ' + data.error);
             } catch (e) { console.error(e); }
