@@ -204,6 +204,7 @@
     <script>
         let demandChart = null;
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
+        let allProducts = [];
 
         function toggleTheme() {
             isDarkMode = !isDarkMode;
@@ -245,6 +246,7 @@
                 const res = await fetch('/api/products');
                 const data = await res.json();
                 if (data.success) {
+                    allProducts = data.products;
                     const tbody = document.getElementById('products-table');
                     tbody.innerHTML = data.products.map(p => {
                         const status = p.quantity_available <= p.reorder_point ? 'RESTOCK' : p.quantity_available <= p.minimum_stock_level * 1.2 ? 'Low' : 'OK';
@@ -252,6 +254,8 @@
                     }).join('');
                     const select = document.getElementById('product-select');
                     select.innerHTML = '<option value="">Select Product</option>' + data.products.map(p => `<option value="${p.product_id}">${p.product_name}</option>`).join('');
+                    const saleSelect = document.getElementById('saleProductSelect');
+                    if (saleSelect) saleSelect.innerHTML = '<option value="">Select Product</option>' + data.products.map(p => `<option value="${p.product_id}">${p.product_name} ($${p.unit_price.toFixed(2)})</option>`).join('');
                 }
             } catch (e) { console.error(e); }
         }
@@ -291,14 +295,6 @@
                 }
             } catch (e) { console.error(e); }
         }
-
-        document.getElementById('saleProductSelect').addEventListener('change', function() {
-            updateSaleAmount();
-        });
-
-        document.getElementById('saleQuantity').addEventListener('input', function() {
-            updateSaleAmount();
-        });
 
         function updateSaleAmount() {
             const productId = document.getElementById('saleProductSelect').value;
@@ -424,14 +420,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadDashboardStats(); loadProducts(); loadRestockAlerts(); loadSuppliers(); loadRecentSales();
-            // Also populate sale product select when products load
-            const observer = setInterval(() => {
-                if (allProducts.length > 0) {
-                    const select = document.getElementById('saleProductSelect');
-                    select.innerHTML = '<option value="">Select Product</option>' + allProducts.map(p => `<option value="${p.product_id}">${p.product_name} ($${p.unit_price.toFixed(2)})</option>`).join('');
-                    clearInterval(observer);
-                }
-            }, 100);
+            document.getElementById('saleProductSelect').addEventListener('change', updateSaleAmount);
+            document.getElementById('saleQuantity').addEventListener('input', updateSaleAmount);
             setInterval(() => { loadDashboardStats(); loadRestockAlerts(); loadRecentSales(); }, 60000);
         });
     </script>
