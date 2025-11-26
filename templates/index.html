@@ -235,13 +235,20 @@
         let allProducts = [];
 
         function formatIndianNumber(number) {
-            if (number >= 10000000) {
-                return (number / 10000000).toFixed(2) + ' Cr';
-            } else if (number >= 100000) {
-                return (number / 100000).toFixed(2) + ' L';
-            } else {
-                return number.toFixed(2);
+            let numStr = number.toFixed(2);
+            let parts = numStr.split('.');
+            let intPart = parts[0];
+            let decPart = parts[1];
+            
+            // Add commas in Indian format
+            let lastThree = intPart.substring(intPart.length - 3);
+            let remaining = intPart.substring(0, intPart.length - 3);
+            
+            if (remaining) {
+                lastThree = remaining.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
             }
+            
+            return lastThree + '.' + decPart;
         }
 
         function toggleTheme() {
