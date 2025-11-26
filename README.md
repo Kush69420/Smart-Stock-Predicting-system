@@ -95,59 +95,50 @@ Generated 180 days of sales data
 
 This creates a file called `inventory.db` in your project folder with sample inventory data for the web interface.
 
-### Step 5: Preprocess Data
+### Step 5: Train the ML Model
 
-Extract and engineer features from the raw sales data:
+Choose your training data source:
+
+#### Quick Option: Train on Sample Database Data
 ```bash
-python data_prep.py
+python train_model_kaggle.py
 ```
+
+#### Production Option: Train on Real Kaggle Data (Recommended)
+
+1. Download from Kaggle:
+   - Go to: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
+   - Click "Download" (requires free Kaggle account)
+   - Extract the CSV file
+
+2. Train on the Kaggle data:
+   ```bash
+   python train_model_kaggle.py sales_inventory.csv
+   ```
 
 **Expected output:**
 ```
-Loading sales data from database...
-Loaded [number] sales records
-Creating features (time-based and lag features)...
-Train set: [number] samples
-Test set: [number] samples
-```
+TRAINING MODEL ON KAGGLE DATA
+Loading Kaggle dataset from: sales_inventory.csv
+Dataset shape: [rows, columns]
+...
+TRAINING GRADIENT BOOSTING MODEL
+Model training complete!
 
-### Step 6: Train the ML Model
-
-Train the Gradient Boosting model on your data:
-```bash
-python model.py
-```
-
-**Expected output:**
-```
-Starting ML model training pipeline...
-Step 1: Loading and preprocessing data...
-Dataset info:
-  Total samples: [number]
-  Training samples: [number]
-  Test samples: [number]
-
-Step 2: Training model...
-Training Gradient Boosting Regressor...
-Parameters: n_estimators=100, learning_rate=0.1, max_depth=5
-
-Step 3: Evaluating model...
-MODEL EVALUATION METRICS
-Training Set Performance:
+TEST SET PERFORMANCE:
+  MAE: [value]
+  RMSE: [value]
   R² Score: [value]
 
-Test Set Performance:
-  R² Score: [value]
-
-Step 4: Saving model...
+✓ EXCELLENT: Model achieves R² > 0.75 (target met!)
 Model saved to inventory_model.pkl
 ```
 
-This creates a file called `inventory_model.pkl` - your trained model.
+This creates `inventory_model.pkl` with your trained model.
 
-### Step 7: (Optional) Evaluate Model Performance
+### Step 6: (Optional) Evaluate Model Performance
 
-View detailed model accuracy and performance metrics:
+View detailed model accuracy metrics:
 ```bash
 python evaluate.py
 ```
@@ -159,7 +150,7 @@ python evaluate.py
 - Prediction samples
 - Error distribution analysis
 
-### Step 8: Run the Flask Application
+### Step 7: Run the Flask Application
 
 Start the web server:
 ```bash
@@ -172,7 +163,7 @@ python app.py
 Press CTRL+C to quit
 ```
 
-### Step 9: Access the Dashboard
+### Step 8: Access the Dashboard
 
 Open your web browser and navigate to:
 ```
@@ -186,7 +177,7 @@ You should see the Smart Inventory Dashboard with:
 - Top products chart
 - Full inventory table
 
-### Complete Step-by-Step Summary
+### Quick Start (Local Machine)
 
 For quick reference, here's the complete sequence of commands:
 
@@ -202,22 +193,20 @@ python -m venv venv
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Setup database with sample data
+# 4. Setup database
 python db_setup.py
 
-# 5. Preprocess data
-python data_prep.py
+# 5. Train model (choose one):
+# Option A: Sample data
+python train_model_kaggle.py
 
-# 6. Train the model
-python model.py
+# Option B: Real Kaggle data
+python train_model_kaggle.py sales_inventory.csv
 
-# 7. (Optional) Evaluate model
-python evaluate.py
-
-# 8. Run the application
+# 6. Run application
 python app.py
 
-# 9. Open browser and go to http://localhost:5000
+# 7. Open http://localhost:5000 in your browser
 ```
 
 ## Troubleshooting
@@ -317,10 +306,10 @@ The Gradient Boosting model is trained with the following parameters:
 ```
 project/
 ├── app.py                  # Flask application
-├── db_setup.py            # Database initialization
-├── data_prep.py           # Data preprocessing
-├── model.py               # ML model training
-├── evaluate.py            # Model evaluation
+├── db_setup.py            # Database initialization & sample data
+├── train_model_kaggle.py   # ML model training (supports CSV or database)
+├── import_kaggle_dataset.py# (Optional) Import CSV data into database
+├── evaluate.py            # Model evaluation & metrics
 ├── inventory_model.pkl    # Trained model (generated)
 ├── inventory.db           # SQLite database (generated)
 ├── requirements.txt       # Dependencies
