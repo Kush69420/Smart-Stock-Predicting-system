@@ -105,19 +105,26 @@ Creates `inventory.db` with:
 - 5 suppliers
 - 1,800 sales transactions (180 days)
 
-### Step 5: Train the ML Model
+### Step 5: Download Kaggle Dataset
 
+1. Go to: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
+2. Click "Download" (requires free Kaggle account)
+3. Extract the CSV file to your project folder
+
+### Step 6: Train the ML Model on Real Data
+
+```bash
+python train_model_kaggle.py sales_inventory.csv
+```
+
+This trains the model on the real Kaggle dataset for production-level accuracy.
+
+**Alternative (Quick Testing)**: If you want to skip Kaggle data and test with sample data:
 ```bash
 python train_model_kaggle.py
 ```
 
-Creates `inventory_model.pkl` trained on your sample database.
-
-**Note**: If you want to use real Kaggle data instead:
-1. Download from: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
-2. Run: `python train_model_kaggle.py sales_inventory.csv`
-
-### Step 6: Run the Application
+### Step 7: Run the Application
 
 ```bash
 python app.py
@@ -129,7 +136,7 @@ Should output:
 * Running on http://0.0.0.0:5000
 ```
 
-### Step 7: Access the Dashboard
+### Step 8: Access the Dashboard
 
 Open your browser and go to: **http://localhost:5000**
 
@@ -147,16 +154,20 @@ python -m venv venv
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Create database with sample data
+# 4. Create database with sample data (for UI demo)
 python db_setup.py
 
-# 5. Train ML model
-python train_model_kaggle.py
+# 5. Download Kaggle dataset
+# - Go to: https://www.kaggle.com/datasets/yukisim/sales-and-inventory-dataset
+# - Extract sales_inventory.csv to project folder
 
-# 6. Run web application
+# 6. Train ML model on real Kaggle data
+python train_model_kaggle.py sales_inventory.csv
+
+# 7. Run web application
 python app.py
 
-# 7. Open http://localhost:5000 in your browser
+# 8. Open http://localhost:5000 in your browser
 ```
 
 ## Dashboard Features
