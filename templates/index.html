@@ -22,9 +22,10 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="/">Smart Inventory</a>
             <span class="navbar-text">ML-Powered Predictive Restocking</span>
-            <button class="theme-toggle" onclick="toggleTheme()">
-                <span id="themeIcon">Light</span>
-            </button>
+            <div class="theme-toggle-container">
+                <input type="checkbox" id="themeToggle" class="theme-toggle-checkbox" onchange="toggleTheme()">
+                <label for="themeToggle" class="theme-toggle-label"></label>
+            </div>
         </div>
     </nav>
 
@@ -239,10 +240,14 @@
         function toggleTheme() {
             isDarkMode = !isDarkMode;
             document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
-            document.getElementById('themeIcon').textContent = isDarkMode ? 'Dark' : 'Light';
+            document.getElementById('themeToggle').checked = isDarkMode;
             localStorage.setItem('darkMode', isDarkMode);
             if (demandChart) updateChartTheme();
         }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('themeToggle').checked = isDarkMode;
+        });
 
         function updateChartTheme() {
             if (!demandChart) return;
